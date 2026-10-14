@@ -520,6 +520,11 @@ const range = (start: string, end?: string) => `${formatMonth(start, locale)} â€
     margin-top: var(--section);
   }
 
+  .reading :global(.books) {
+    margin-top: 2.5rem;
+    max-width: 52rem;
+  }
+
   @media (max-width: 56rem) {
     .about,
     .work-head,

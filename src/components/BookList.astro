@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import { statusLabel, type Book } from '../data/books';
 import type { Locale } from '../i18n/ui';
 
@@ -8,24 +9,42 @@ interface Props {
 }
 
 const { books, locale } = Astro.props;
+const copy = {
+  pt: { cover: 'Capa de', store: 'Ver na Amazon', storeOf: 'na Amazon' },
+  en: { cover: 'Cover of', store: 'See on Amazon', storeOf: 'on Amazon' },
+}[locale];
 ---
 
 <ul class="books" data-reveal="stagger">
   {
     books.map((book) => (
       <li class="book" data-status={book.status} data-topic={book.topic.en}>
-        <div class="spine" aria-hidden="true">
-          <span>{book.title[locale]}</span>
-        </div>
-        <div class="book-body">
-          <p class="book-status">
-            <span class:list={['status-dot', book.status]} aria-hidden="true" />
-            {statusLabel[book.status][locale]}, {book.topic[locale]}
-          </p>
-          <h3>{book.link ? <a href={book.link}>{book.title[locale]}</a> : book.title[locale]}</h3>
-          <p class="author">{book.author}</p>
-          {book.note && <p class="note">{book.note[locale]}</p>}
-        </div>
+        <a class="cover" href={book.link} tabindex="-1" aria-hidden="true">
+          <Image
+            src={book.cover}
+            alt=""
+            widths={[240, 360, 480]}
+            sizes="(min-width: 64rem) 15rem, (min-width: 34rem) 40vw, 80vw"
+            loading="lazy"
+          />
+        </a>
+        <h3>{book.title[locale]}</h3>
+        <p class="author">{book.author}</p>
+        <ul class="chips">
+          <li class="chip topic">{book.topic[locale]}</li>
+          <li class:list={['chip', 'status', book.status]}>
+            <span class="dot" aria-hidden="true" />
+            {statusLabel[book.status][locale]}
+          </li>
+        </ul>
+        {book.note && <p class="note">{book.note[locale]}</p>}
+        <a class="store" href={book.link} rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M7 17 17 7M9 7h8v8" />
+          </svg>
+          {copy.store}
+          <span class="visually-hidden">: {book.title[locale]}</span>
+        </a>
       </li>
     ))
   }
@@ -34,90 +53,160 @@ const { books, locale } = Astro.props;
 <style>
   .books {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
-    gap: 2.5rem 2rem;
-    margin-top: 2.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 13.5rem), 1fr));
+    gap: 2.5rem 1.75rem;
     padding: 0;
     list-style: none;
   }
 
   .book {
-    display: grid;
-    grid-template-columns: 4.2rem minmax(0, 1fr);
-    gap: 1.1rem;
-  }
-
-  .spine {
-    height: 9rem;
-    border-radius: 6px 10px 10px 6px;
-    background: var(--bg-raised);
-    border: 1px solid var(--line-strong);
-    box-shadow: inset 6px 0 0 color-mix(in oklab, var(--signal) 70%, transparent);
-    display: grid;
-    place-items: center;
-    overflow: hidden;
-  }
-
-  .spine span {
-    writing-mode: vertical-rl;
-    rotate: 180deg;
-    font-weight: 700;
-    font-stretch: 75%;
-    font-size: 0.85rem;
-    max-height: 8rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .book-status {
     display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-size: var(--step--1);
-    color: var(--ink-soft);
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .status-dot {
-    width: 0.55rem;
-    height: 0.55rem;
-    border-radius: 50%;
-    border: 2px solid var(--signal-text);
+  .book[hidden] {
+    display: none;
   }
 
-  .status-dot.reading {
-    background: var(--signal);
-    border-color: var(--signal);
+  .cover {
+    display: block;
+    width: 100%;
+    margin-bottom: 1.1rem;
+    padding: clamp(0.9rem, 2vw, 1.4rem);
+    border-radius: var(--radius);
+    background:
+      radial-gradient(ellipse at 50% 110%, var(--signal-wash), transparent 70%),
+      var(--bg-raised);
+    border: 1px solid var(--line);
   }
 
-  .status-dot.read {
-    background: var(--signal-text);
+  .cover img {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 4px 8px 8px 4px;
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.2),
+      0 14px 28px -12px rgb(0 0 0 / 0.45);
+    transition: translate 0.35s var(--ease-out), rotate 0.35s var(--ease-out);
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .book:has(a:hover) .cover img {
+      translate: 0 -6px;
+      rotate: -1.5deg;
+    }
   }
 
   .book h3 {
-    margin-top: 0.35rem;
     font-size: var(--step-1);
     font-weight: 680;
     line-height: 1.2;
   }
 
-  .book h3 a {
-    text-decoration: none;
-  }
-
-  .book h3 a:hover {
-    text-decoration: underline;
-    text-decoration-color: var(--signal);
-  }
-
   .author {
+    margin-top: 0.25rem;
     color: var(--ink-soft);
-    margin-top: 0.15rem;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-block: 0.85rem 0.9rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.15rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .chip.topic {
+    color: var(--signal-text);
+    border-color: color-mix(in oklab, var(--signal-text) 40%, transparent);
+  }
+
+  .dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    border: 2px solid var(--signal-text);
+  }
+
+  .status.read .dot {
+    background: var(--signal-text);
+  }
+
+  .status.reading .dot {
+    background: var(--signal);
+    border-color: var(--signal);
+    box-shadow: 0 0 0 3px var(--signal-wash);
   }
 
   .note {
-    margin-top: 0.6rem;
+    margin-top: 0.75rem;
     font-size: var(--step--1);
     line-height: 1.55;
+  }
+
+  .store {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    /* Empurra o botão para o fim do card, alinhando os botões da mesma linha. */
+    margin-top: auto;
+    padding: 0.45rem 0.95rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: var(--step--1);
+    text-decoration: none;
+  }
+
+  .store:hover {
+    border-color: var(--ink);
+  }
+
+  .store svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* Celular: dois livros por linha, com capa e textos menores. */
+  @media (max-width: 34rem) {
+    .books {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2rem 1rem;
+    }
+    .cover {
+      padding: 0.6rem;
+      margin-bottom: 0.75rem;
+    }
+    .book h3 {
+      font-size: var(--step-0);
+    }
+    .author,
+    .chip {
+      font-size: 0.8rem;
+    }
+    .chip {
+      padding-inline: 0.5rem;
+    }
+    .store {
+      width: 100%;
+      justify-content: center;
+      padding-inline: 0.5rem;
+      font-size: 0.8rem;
+    }
   }
 </style>

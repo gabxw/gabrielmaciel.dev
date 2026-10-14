@@ -56,7 +56,8 @@ const status = statuses.filter((s) => counts[s] > 0);
     {
       books.length > 0 ? (
         <>
-          <div class="filters" data-book-filters hidden>
+          <div class="shelf">
+          <aside class="filters" data-book-filters hidden>
             <div class="filter-group" role="group" aria-label={copy.statusLabel} data-key="status">
               <span class="filter-name" aria-hidden="true">{copy.statusLabel}</span>
               <button type="button" data-filter="all" aria-pressed="true">
@@ -79,12 +80,15 @@ const status = statuses.filter((s) => counts[s] > 0);
                 </button>
               ))}
             </div>
-          </div>
+          </aside>
+          <div class="shelf-main">
           <p class="visually-hidden" role="status" data-book-status data-one={copy.count(1)} data-many={copy.count(2)} />
           <div data-book-list>
             <BookList books={books} locale={locale} />
           </div>
           <p class="none" data-books-empty hidden>{copy.none}</p>
+          </div>
+          </div>
         </>
       ) : (
         <div class="empty">
@@ -149,47 +153,66 @@ const status = statuses.filter((s) => counts[s] > 0);
     line-height: 0.86;
   }
 
-  .filters {
+  .shelf {
     display: grid;
-    gap: 0.75rem;
+    grid-template-columns: 15rem minmax(0, 1fr);
+    gap: 2.5rem 3rem;
+    align-items: start;
     margin-top: 3rem;
   }
 
-  .filter-group {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
+  /* Sem JS os filtros ficam escondidos e a estante ocupa a largura toda. */
+  .shelf:has(.filters[hidden]) {
+    grid-template-columns: 1fr;
   }
 
-  .none {
-    margin-top: 2.5rem;
-    color: var(--ink-soft);
+  .filters {
+    position: sticky;
+    top: 6rem;
+    display: grid;
+    gap: 1.75rem;
+    padding: 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+  }
+
+  .filter-group {
+    display: grid;
+    gap: 0.15rem;
   }
 
   .filter-name {
-    min-width: 5.5rem;
+    margin-bottom: 0.4rem;
     color: var(--ink-soft);
     font-size: var(--step--1);
   }
 
   .filters button {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: space-between;
+    gap: 0.75rem;
     min-height: 2.75rem;
-    padding: 0.45rem 1rem;
-    border: 1px solid var(--line);
-    border-radius: 999px;
+    padding: 0.4rem 0.75rem;
+    border: 0;
+    border-radius: 10px;
     background: transparent;
-    font-weight: 600;
+    color: var(--ink-soft);
+    font-weight: 550;
+    text-align: left;
     cursor: pointer;
   }
 
+  .filters button:hover {
+    color: var(--ink);
+    background: color-mix(in oklab, var(--line) 45%, transparent);
+  }
+
   .filters button[aria-pressed='true'] {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--bg);
+    color: var(--ink);
+    background: var(--signal-wash);
+    font-weight: 700;
   }
 
   .count {
@@ -224,8 +247,28 @@ const status = statuses.filter((s) => counts[s] > 0);
   }
 
   @media (max-width: 56rem) {
-    .page-head {
+    .page-head,
+    .shelf {
       grid-template-columns: 1fr;
+    }
+    .filters {
+      position: static;
+      gap: 1rem;
+      padding: 1rem;
+    }
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .filter-name {
+      width: 100%;
+      margin-bottom: 0;
+    }
+    .filters button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
     }
   }
 </style>
