@@ -1,0 +1,73 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { htmlLang, ui, type Locale } from '../i18n/ui';
+import fontLatin from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-standard-normal.woff2?url';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  /** Endereço desta mesma página no outro idioma. */
+  alternate: string;
+  current?: 'home' | 'projects' | 'books';
+  image?: string;
+}
+
+const { locale, title, description, alternate, current, image = '/og.png' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const other: Locale = locale === 'pt' ? 'en' : 'pt';
+const altUrl = new URL(alternate, Astro.site);
+const t = ui[locale];
+---
+
+<!doctype html>
+<html lang={htmlLang[locale]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <script is:inline>
+      try {
+        document.querySelector('meta[name="color-scheme"]').content = localStorage.getItem('color-scheme') ?? 'light dark';
+      } catch {}
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('js-motion');
+        // Se as animações não carregarem, o conteúdo aparece mesmo assim.
+        setTimeout(() => {
+          if (!window.__motionReady) document.documentElement.classList.remove('js-motion');
+        }, 2500);
+      }
+    </script>
+    <meta name="theme-color" content="#eef3ee" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0c1411" media="(prefers-color-scheme: dark)" />
+    <link rel="preload" href={fontLatin} as="font" type="font/woff2" crossorigin />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang={htmlLang[locale]} href={canonical} />
+    <link rel="alternate" hreflang={htmlLang[other]} href={altUrl} />
+    <link rel="alternate" hreflang="x-default" href={locale === 'pt' ? canonical : altUrl} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta property="og:locale" content={locale === 'pt' ? 'pt_BR' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">{t.skip}</a>
+    <Header locale={locale} alternate={alternate} current={current} />
+    <main id="conteudo" tabindex="-1">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+    <script>
+      import '../scripts/theme';
+      import '../scripts/reveal';
+    </script>
+  </body>
+</html>

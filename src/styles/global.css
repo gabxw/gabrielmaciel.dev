@@ -1,0 +1,277 @@
+@import '@fontsource-variable/bricolage-grotesque/standard.css';
+@import '@fontsource/martian-mono/400.css';
+@import '@fontsource/martian-mono/500.css';
+
+/* Tema: segue o sistema por padrão. O botão de tema troca o <meta name="color-scheme">
+   e estas regras levam a escolha para o CSS. */
+:root {
+  color-scheme: light dark;
+
+  &:has(> head > meta[name='color-scheme'][content='dark']) {
+    color-scheme: dark;
+  }
+  &:has(> head > meta[name='color-scheme'][content='light']) {
+    color-scheme: light;
+  }
+
+  /* Paleta */
+  --green-400: #4ade80;
+  --bg: light-dark(#eef3ee, #0c1411);
+  --bg-raised: light-dark(#f8fbf7, #121d18);
+  --ink: light-dark(#0f1c15, #e4ede7);
+  --ink-soft: light-dark(#4a5e53, #94a89d);
+  --line: light-dark(#cfdbd2, #22332b);
+  --line-strong: light-dark(#7a9183, #56705f);
+  /* green-400 é o sinal: preenchimentos, traços e pontos vivos. Texto em verde
+     no tema claro usa um tom mais escuro para manter o contraste. */
+  --signal: var(--green-400);
+  --signal-text: light-dark(#166534, #4ade80);
+  --signal-ink: #052e16;
+  --signal-wash: light-dark(rgb(74 222 128 / 0.16), rgb(74 222 128 / 0.1));
+  --warn: light-dark(#b45309, #fbbf24);
+
+  /* Tipografia */
+  --font-sans: 'Bricolage Grotesque Variable', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Martian Mono', ui-monospace, 'Cascadia Mono', monospace;
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.3125rem;
+  --step-2: 1.625rem;
+  --step-3: clamp(1.9rem, 1.4rem + 1.6vw, 2.6rem);
+  --step-4: clamp(2.4rem, 1.6rem + 3vw, 4rem);
+  --step-display: clamp(4.4rem, 1rem + 13vw, 10.5rem);
+
+  /* Espaço */
+  --gutter: clamp(1rem, 0.4rem + 2.6vw, 2.75rem);
+  --section: clamp(5rem, 3rem + 8vw, 10rem);
+  --max: 82rem;
+  --measure: 66ch;
+  --radius: 14px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+
+::view-transition-old(root) {
+  animation: 0.28s var(--ease-out, ease) both vt-out;
+}
+::view-transition-new(root) {
+  animation: 0.42s var(--ease-out, ease) both vt-in;
+}
+@keyframes vt-out {
+  to { opacity: 0; translate: 0 -12px; }
+}
+@keyframes vt-in {
+  from { opacity: 0; translate: 0 18px; }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  font-stretch: 100%;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  line-height: 1.05;
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+p,
+ul,
+ol,
+dl,
+figure {
+  margin: 0;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+img,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+a:hover {
+  text-decoration-color: var(--signal);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--signal-text);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--signal);
+  color: var(--signal-ink);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--gutter);
+  top: 0.75rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  background: var(--signal);
+  color: var(--signal-ink);
+  border-radius: 8px;
+  font-weight: 600;
+  translate: 0 -200%;
+}
+.skip-link:focus {
+  translate: 0 0;
+}
+
+.wrap {
+  width: min(100% - 2 * var(--gutter), var(--max));
+  margin-inline: auto;
+}
+
+/* Títulos de seção: grandes, comprimidos, à esquerda. */
+.section-title {
+  font-size: var(--step-4);
+  font-stretch: 80%;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+}
+
+.lede {
+  font-size: var(--step-1);
+  line-height: 1.45;
+  color: var(--ink-soft);
+  max-width: 38ch;
+}
+
+/* Botões */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.9rem;
+  padding: 0.65rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  font-weight: 600;
+  font-size: var(--step-0);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+.btn:hover {
+  border-color: var(--ink);
+}
+.btn-primary {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--signal-ink);
+}
+.btn-primary:hover {
+  background: color-mix(in oklab, var(--signal) 85%, white);
+  border-color: transparent;
+}
+.btn svg {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+/* Etiquetas de tecnologia */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0;
+  list-style: none;
+}
+.tags li {
+  padding: 0.18rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+/* Ponto "ao vivo" usado em produtos no ar */
+.live-dot {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--signal);
+  box-shadow: 0 0 0 4px var(--signal-wash);
+  flex: none;
+}
+
+/* Animações com GSAP só começam escondidas quando o JS confirmou que vai animar. */
+html.js-motion [data-reveal] {
+  opacity: 0;
+}

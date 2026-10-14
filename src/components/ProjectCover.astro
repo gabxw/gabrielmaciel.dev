@@ -1,0 +1,125 @@
+---
+import { Image } from 'astro:assets';
+import type { Project } from '../data/projects';
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  project: Project;
+  locale: Locale;
+  /** Prioriza o carregamento quando a capa aparece no topo da página. */
+  eager?: boolean;
+  sizes?: string;
+}
+
+const { project, locale, eager = false, sizes = '(min-width: 64rem) 60vw, 100vw' } = Astro.props;
+const loading = eager ? 'eager' : 'lazy';
+---
+
+{
+  project.motion ? (
+    <img
+      class="cover cover-media"
+      src={project.motion.src}
+      alt={project.motion.alt[locale]}
+      width="1440"
+      height="900"
+      loading={loading}
+      decoding="async"
+    />
+  ) : project.cover ? (
+    <Image
+      class:list={['cover', 'cover-media', { 'cover-phone': project.cover.phone }]}
+      src={project.cover.image}
+      alt={project.cover.alt[locale]}
+      widths={project.cover.phone ? [360, 540] : [640, 960, 1440]}
+      sizes={project.cover.phone ? '(min-width: 64rem) 22rem, 70vw' : sizes}
+      loading={loading}
+      fetchpriority={eager ? 'high' : 'auto'}
+    />
+  ) : (
+    <div class="cover cover-type" aria-hidden="true">
+      <svg viewBox="0 0 400 250" preserveAspectRatio="none">
+        <path d="M0 190 H120 C160 190 160 120 200 120 H260 C300 120 300 60 340 60 H400" />
+        <path d="M0 220 H90 C130 220 140 160 180 160 H400" />
+        <circle cx="120" cy="190" r="5" />
+        <circle cx="260" cy="120" r="5" />
+        <circle cx="340" cy="60" r="5" />
+      </svg>
+      <span class="cover-name">{project.name}</span>
+      <span class="cover-stack">{project.stack.slice(0, 3).join(' / ')}</span>
+    </div>
+  )
+}
+
+<style>
+  .cover {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+  }
+
+  .cover-media {
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  /* Altura fixa: a largura vem da proporção da imagem e nada pula ao carregar. */
+  .cover-phone {
+    /* As telas de celular dos projetos são todas 800 × 1720. */
+    aspect-ratio: 800 / 1720;
+    width: auto;
+    height: 34rem;
+    max-width: 100%;
+    object-fit: contain;
+    margin-inline: auto;
+    border-radius: 22px;
+  }
+
+  .cover-type {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    display: grid;
+    align-content: end;
+    padding: clamp(1rem, 3vw, 2rem);
+    background:
+      radial-gradient(circle at 85% 15%, var(--signal-wash), transparent 55%),
+      var(--bg-raised);
+  }
+
+  .cover-type svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .cover-type path {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .cover-type circle {
+    fill: var(--signal);
+  }
+
+  .cover-name {
+    position: relative;
+    font-size: clamp(2rem, 1rem + 4vw, 3.6rem);
+    font-weight: 780;
+    font-stretch: 75%;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+  }
+
+  .cover-stack {
+    position: relative;
+    margin-top: 0.4rem;
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+  }
+</style>

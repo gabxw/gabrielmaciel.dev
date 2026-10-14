@@ -1,0 +1,123 @@
+---
+import { statusLabel, type Book } from '../data/books';
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  books: Book[];
+  locale: Locale;
+}
+
+const { books, locale } = Astro.props;
+---
+
+<ul class="books" data-reveal="stagger">
+  {
+    books.map((book) => (
+      <li class="book" data-status={book.status} data-topic={book.topic.pt}>
+        <div class="spine" aria-hidden="true">
+          <span>{book.title}</span>
+        </div>
+        <div class="book-body">
+          <p class="book-status">
+            <span class:list={['status-dot', book.status]} aria-hidden="true" />
+            {statusLabel[book.status][locale]}, {book.topic[locale]}
+          </p>
+          <h3>{book.link ? <a href={book.link}>{book.title}</a> : book.title}</h3>
+          <p class="author">{book.author}</p>
+          {book.note && <p class="note">{book.note[locale]}</p>}
+        </div>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .books {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+    gap: 2.5rem 2rem;
+    margin-top: 2.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .book {
+    display: grid;
+    grid-template-columns: 4.2rem minmax(0, 1fr);
+    gap: 1.1rem;
+  }
+
+  .spine {
+    height: 9rem;
+    border-radius: 6px 10px 10px 6px;
+    background: var(--bg-raised);
+    border: 1px solid var(--line-strong);
+    box-shadow: inset 6px 0 0 color-mix(in oklab, var(--signal) 70%, transparent);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  .spine span {
+    writing-mode: vertical-rl;
+    rotate: 180deg;
+    font-weight: 700;
+    font-stretch: 75%;
+    font-size: 0.85rem;
+    max-height: 8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .book-status {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .status-dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    border: 2px solid var(--signal-text);
+  }
+
+  .status-dot.reading {
+    background: var(--signal);
+    border-color: var(--signal);
+  }
+
+  .status-dot.read {
+    background: var(--signal-text);
+  }
+
+  .book h3 {
+    margin-top: 0.35rem;
+    font-size: var(--step-1);
+    font-weight: 680;
+    line-height: 1.2;
+  }
+
+  .book h3 a {
+    text-decoration: none;
+  }
+
+  .book h3 a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--signal);
+  }
+
+  .author {
+    color: var(--ink-soft);
+    margin-top: 0.15rem;
+  }
+
+  .note {
+    margin-top: 0.6rem;
+    font-size: var(--step--1);
+    line-height: 1.55;
+  }
+</style>

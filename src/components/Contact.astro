@@ -1,0 +1,106 @@
+---
+import { contact, ui, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = ui[locale];
+const copy = {
+  pt: {
+    title: 'Quer conversar sobre um projeto ou uma vaga?',
+    text: 'Respondo por e-mail ou pelo LinkedIn. Se for sobre algum projeto daqui, pode mandar a pergunta direto.',
+  },
+  en: {
+    title: 'Want to talk about a project or a role?',
+    text: 'I answer by email or on LinkedIn. If it is about one of the projects here, feel free to send the question right away.',
+  },
+}[locale];
+---
+
+<section id="contato" class="contact wrap" aria-labelledby="contact-title">
+  <h2 id="contact-title" class="contact-title" data-reveal="title">{copy.title}</h2>
+  <p class="lede" data-reveal="fade">{copy.text}</p>
+  <div class="contact-row" data-reveal="fade">
+    <a class="email" href={`mailto:${contact.email}`}>{contact.email}</a>
+    <button class="btn" type="button" data-copy={contact.email} data-done={t.copied}>
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="8" y="8" width="12" height="12" rx="2.5"></rect>
+        <path d="M16 8V6.5A2.5 2.5 0 0 0 13.5 4h-7A2.5 2.5 0 0 0 4 6.5v7A2.5 2.5 0 0 0 6.5 16H8"></path>
+      </svg>
+      <span data-copy-label>{t.copyEmail}</span>
+    </button>
+  </div>
+  <ul class="elsewhere" data-reveal="fade">
+    <li><a class="btn" href={contact.linkedin} rel="me">LinkedIn</a></li>
+    <li><a class="btn" href={contact.github} rel="me">GitHub</a></li>
+  </ul>
+  <p class="visually-hidden" role="status" data-copy-status></p>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {
+    const label = button.querySelector<HTMLElement>('[data-copy-label]')!;
+    const status = document.querySelector<HTMLElement>('[data-copy-status]');
+    const original = label.textContent;
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy!);
+        label.textContent = button.dataset.done!;
+        if (status) status.textContent = button.dataset.done!;
+        setTimeout(() => (label.textContent = original), 2200);
+      } catch {
+        window.location.href = `mailto:${button.dataset.copy}`;
+      }
+    });
+  });
+</script>
+
+<style>
+  .contact {
+    margin-top: var(--section);
+    padding-top: var(--section);
+    border-top: 1px solid var(--line);
+  }
+
+  .contact-title {
+    font-size: var(--step-4);
+    font-stretch: 78%;
+    font-weight: 750;
+    letter-spacing: -0.025em;
+    line-height: 0.98;
+    max-width: 16ch;
+  }
+
+  .contact .lede {
+    margin-top: 1.25rem;
+  }
+
+  .contact-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-top: 2.5rem;
+  }
+
+  .email {
+    font-size: clamp(1.4rem, 0.8rem + 3vw, 3rem);
+    font-weight: 650;
+    font-stretch: 85%;
+    letter-spacing: -0.02em;
+    text-decoration-color: var(--signal);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 0.18em;
+    overflow-wrap: anywhere;
+  }
+
+  .elsewhere {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 1.75rem;
+    padding: 0;
+    list-style: none;
+  }
+</style>

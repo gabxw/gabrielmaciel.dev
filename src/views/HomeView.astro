@@ -1,0 +1,551 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import StackPlayground from '../components/StackPlayground.astro';
+import ProjectCover from '../components/ProjectCover.astro';
+import Contact from '../components/Contact.astro';
+import BookList from '../components/BookList.astro';
+import { projects, kindLabel } from '../data/projects';
+import { books } from '../data/books';
+import { jobs, studies } from '../data/profile';
+import { formatMonth, projectRoute, route, ui, type Locale } from '../i18n/ui';
+import avatar from '../assets/projects/avatar.jpg';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = ui[locale];
+
+const copy = {
+  pt: {
+    title: 'Gabriel Maciel, desenvolvedor backend',
+    description: 'Desenvolvedor backend em Belo Horizonte. C#/.NET, Laravel e Python. Projetos, trajetória e livros.',
+    aboutTitle: 'Sobre mim',
+    about: [
+      'Entrei em TI pelo suporte, consertando computador e atendendo chamado. Em 2025 virei estagiário de desenvolvimento no Grupo Roma Brasil, uma rede de concessionárias, e desde junho de 2026 sou desenvolvedor lá. Trabalho nos sistemas internos que financeiro, contabilidade, logística e comercial usam todo dia.',
+      'Fora do expediente eu construo coisas para entender como elas funcionam de verdade. Coloquei dois SaaS no ar sozinho, o ZapBebidas e o AgendeCorte, e fiz o FlowForge para estudar o que acontece quando um sistema falha no meio do caminho.',
+      'Antes de programar, passei por vendas. Ficou o hábito de perguntar o que a pessoa do outro lado precisa antes de pensar na solução, e o hackathon Ruptura 2026 me cobrou isso logo na primeira mentoria.',
+    ],
+    facts: [
+      ['Base', 'Belo Horizonte, MG'],
+      ['Agora', 'Desenvolvedor no Grupo Roma Brasil'],
+      ['Estudando', 'Engenharia de Software na UFBRA'],
+      ['Idiomas', 'Português e inglês intermediário'],
+    ],
+    photoAlt: 'Foto de Gabriel Maciel sorrindo.',
+    pathTitle: 'Trajetória',
+    present: 'hoje',
+    studyTitle: 'Formação',
+    projectsTitle: 'Projetos',
+    projectsText: 'Os que eu mais gosto de mostrar. Cada um tem uma página contando por que eu fiz e como funciona por dentro.',
+    allProjects: `Ver os ${projects.length} projetos`,
+    live: 'No ar',
+    booksTitle: 'Lendo',
+    allBooks: 'Ver a estante',
+  },
+  en: {
+    title: 'Gabriel Maciel, backend developer',
+    description: 'Backend developer in Belo Horizonte, Brazil. C#/.NET, Laravel and Python. Projects, career and books.',
+    aboutTitle: 'About me',
+    about: [
+      'I got into tech through IT support, fixing computers and answering tickets. In 2025 I became a development intern at Grupo Roma Brasil, a car dealership group, and since June 2026 I have been a developer there. I work on the internal systems that finance, accounting, logistics and sales use every day.',
+      'Outside work I build things to understand how they really work. I shipped two SaaS products on my own, ZapBebidas and AgendeCorte, and built FlowForge to study what happens when a system fails halfway through.',
+      'Before programming I worked in sales. I kept the habit of asking what the person on the other side needs before thinking about the solution, and the Ruptura 2026 hackathon pushed me on exactly that in the very first mentoring session.',
+    ],
+    facts: [
+      ['Based in', 'Belo Horizonte, Brazil'],
+      ['Now', 'Developer at Grupo Roma Brasil'],
+      ['Studying', 'Software Engineering at UFBRA'],
+      ['Languages', 'Portuguese and intermediate English'],
+    ],
+    photoAlt: 'Photo of Gabriel Maciel smiling.',
+    pathTitle: 'Career',
+    present: 'now',
+    studyTitle: 'Education',
+    projectsTitle: 'Projects',
+    projectsText: 'The ones I most like to show. Each has a page explaining why I built it and how it works inside.',
+    allProjects: `See all ${projects.length} projects`,
+    live: 'Live',
+    booksTitle: 'Reading',
+    allBooks: 'See the shelf',
+  },
+}[locale];
+
+const featured = projects.filter((p) => p.featured);
+const [lead, ...others] = featured;
+const range = (start: string, end?: string) => `${formatMonth(start, locale)} – ${end ? formatMonth(end, locale) : copy.present}`;
+---
+
+<Base locale={locale} title={copy.title} description={copy.description} alternate={route('home', locale === 'pt' ? 'en' : 'pt')} current="home">
+  <Hero locale={locale} />
+
+  <section class="about wrap" aria-labelledby="about-title">
+    <div class="about-photo" data-reveal="clip">
+      <Image src={avatar} alt={copy.photoAlt} widths={[320, 460]} sizes="(min-width: 56rem) 22rem, 60vw" />
+    </div>
+    <div class="about-text">
+      <h2 id="about-title" class="section-title" data-reveal="title">{copy.aboutTitle}</h2>
+      <div class="prose" data-reveal="fade">
+        {copy.about.map((p) => <p>{p}</p>)}
+      </div>
+      <dl class="facts" data-reveal="stagger">
+        {
+          copy.facts.map(([k, v]) => (
+            <div>
+              <dt>{k}</dt>
+              <dd>{v}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="path wrap" aria-labelledby="path-title">
+    <h2 id="path-title" class="section-title" data-reveal="title">{copy.pathTitle}</h2>
+    <div class="timeline">
+      <span class="timeline-rail" aria-hidden="true"><span class="timeline-progress" data-timeline-progress></span></span>
+      <ol class="jobs">
+      {
+        jobs.map((job) => (
+          <li class="job" data-reveal="fade">
+            <div class="job-head">
+              <h3>{job.company}</h3>
+              <p>{job.place[locale]}</p>
+            </div>
+            <ol class="roles">
+              {job.roles.map((role) => (
+                <li class:list={['role', { current: !role.end }]}>
+                  <span class="dot" aria-hidden="true" />
+                  <p class="when">
+                    <time datetime={role.start}>{range(role.start, role.end)}</time>
+                  </p>
+                  <h4>
+                    {role.title[locale]} <span class="kind">{role.kind[locale]}</span>
+                  </h4>
+                  <ul class="role-items">
+                    {role.items.map((item) => (
+                      <li>{item[locale]}</li>
+                    ))}
+                  </ul>
+                  {role.stack && (
+                    <ul class="tags">
+                      {role.stack.map((s) => (
+                        <li>{s}</li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </li>
+        ))
+      }
+      </ol>
+    </div>
+
+    <div class="studies" data-reveal="fade">
+      <h3>{copy.studyTitle}</h3>
+      <ul>
+        {
+          studies.map((s) => (
+            <li>
+              <strong>{s.course[locale]}</strong>
+              <span>
+                {s.school}, {range(s.start, s.end)}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="work wrap" aria-labelledby="work-title">
+    <div class="work-head">
+      <h2 id="work-title" class="section-title" data-reveal="title">{copy.projectsTitle}</h2>
+      <p class="lede" data-reveal="fade">{copy.projectsText}</p>
+    </div>
+
+    <article class="lead-project">
+      <a class="lead-media" href={projectRoute(lead.slug, locale)} tabindex="-1" aria-hidden="true" data-reveal="clip">
+        <ProjectCover project={lead} locale={locale} />
+      </a>
+      <div class="lead-text" data-reveal="fade">
+        <p class="meta">{kindLabel[lead.kind][locale]}, {formatMonth(lead.start, locale)}</p>
+        <h3><a href={projectRoute(lead.slug, locale)}>{lead.name}</a></h3>
+        <p>{lead.summary[locale]}</p>
+        <ul class="tags">{lead.stack.slice(0, 6).map((s) => <li>{s}</li>)}</ul>
+        <a class="btn" href={projectRoute(lead.slug, locale)}>{t.viewProject}<span class="visually-hidden">: {lead.name}</span></a>
+      </div>
+    </article>
+
+    <div class="pair">
+      {
+        others.map((p) => (
+          <article class="project-card" data-reveal="fade">
+            <a class="card-media" href={projectRoute(p.slug, locale)} tabindex="-1" aria-hidden="true">
+              <ProjectCover project={p} locale={locale} sizes="(min-width: 56rem) 40vw, 100vw" />
+            </a>
+            <p class="meta">
+              {p.live && <span class="live-dot" aria-hidden="true" />}
+              {p.live ? copy.live : kindLabel[p.kind][locale]}, {formatMonth(p.start, locale)}
+            </p>
+            <h3><a href={projectRoute(p.slug, locale)}>{p.name}</a></h3>
+            <p>{p.summary[locale]}</p>
+          </article>
+        ))
+      }
+    </div>
+
+    <a class="all-link" href={route('projects', locale)}>{copy.allProjects}</a>
+  </section>
+
+  <StackPlayground locale={locale} />
+
+  {
+    books.length > 0 && (
+      <section class="reading wrap" aria-labelledby="reading-title">
+        <h2 id="reading-title" class="section-title" data-reveal="title">{copy.booksTitle}</h2>
+        <BookList books={books.filter((b) => b.status === 'reading').slice(0, 3)} locale={locale} />
+        <a class="all-link" href={route('books', locale)}>{copy.allBooks}</a>
+      </section>
+    )
+  }
+
+  <Contact locale={locale} />
+</Base>
+
+<style>
+  .about {
+    margin-top: var(--section);
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
+    gap: 2.5rem 4rem;
+    align-items: start;
+  }
+
+  .about-photo {
+    max-width: 20rem;
+  }
+
+  .about-photo img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: 20px;
+    filter: saturate(0.9);
+  }
+
+  .prose {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.75rem;
+    max-width: var(--measure);
+    font-size: var(--step-1);
+    line-height: 1.55;
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem 2rem;
+    margin-top: 2.5rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line);
+    max-width: var(--measure);
+  }
+
+  .facts dt {
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+  }
+
+  .facts dd {
+    margin: 0.15rem 0 0;
+    font-weight: 600;
+  }
+
+  /* Trajetória */
+  .path {
+    margin-top: var(--section);
+  }
+
+  .timeline {
+    position: relative;
+    margin-top: 3rem;
+  }
+
+  .jobs {
+    display: grid;
+    gap: 3.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .timeline-rail {
+    position: absolute;
+    top: 0.4rem;
+    bottom: 0;
+    left: calc(25% + 1.25rem);
+    width: 2px;
+    background: var(--line);
+  }
+
+  .timeline-progress {
+    position: absolute;
+    inset: 0;
+    background: var(--signal);
+    transform-origin: top;
+  }
+
+  .job {
+    display: grid;
+    grid-template-columns: 25% minmax(0, 1fr);
+    gap: 1rem 2.5rem;
+  }
+
+  .job-head h3 {
+    font-size: var(--step-2);
+    font-stretch: 85%;
+    letter-spacing: -0.01em;
+  }
+
+  .job-head p {
+    color: var(--ink-soft);
+    margin-top: 0.3rem;
+  }
+
+  .roles {
+    display: grid;
+    gap: 2.25rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .role {
+    position: relative;
+    padding-left: 1.5rem;
+    max-width: var(--measure);
+  }
+
+  .dot {
+    position: absolute;
+    left: calc(-1.25rem - 6px);
+    top: 0.45rem;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--line-strong);
+  }
+
+  .role.current .dot {
+    background: var(--signal);
+    border-color: var(--signal);
+    box-shadow: 0 0 0 5px var(--signal-wash);
+  }
+
+  .when {
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .role h4 {
+    margin-top: 0.25rem;
+    font-size: var(--step-1);
+    font-weight: 650;
+  }
+
+  .kind {
+    font-weight: 400;
+    color: var(--ink-soft);
+    font-size: var(--step-0);
+    margin-left: 0.25rem;
+  }
+
+  .role-items {
+    display: grid;
+    gap: 0.45rem;
+    margin-top: 0.75rem;
+    padding-left: 1.1rem;
+  }
+
+  .role-items li::marker {
+    color: var(--signal-text);
+  }
+
+  .role .tags {
+    margin-top: 0.9rem;
+  }
+
+  .studies {
+    display: grid;
+    grid-template-columns: 25% minmax(0, 1fr);
+    gap: 1rem 2.5rem;
+    margin-top: 3.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .studies h3 {
+    font-size: var(--step-2);
+    font-stretch: 85%;
+  }
+
+  .studies ul {
+    display: grid;
+    gap: 1rem;
+    padding: 0 0 0 1.5rem;
+    list-style: none;
+  }
+
+  .studies li {
+    display: grid;
+  }
+
+  .studies span {
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+  }
+
+  /* Projetos */
+  .work {
+    margin-top: var(--section);
+  }
+
+  .work-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem 3rem;
+    align-items: end;
+  }
+
+  .lead-project {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: 2rem 3rem;
+    align-items: center;
+    margin-top: 3rem;
+  }
+
+  .lead-text h3 {
+    font-size: var(--step-4);
+    font-stretch: 78%;
+    letter-spacing: -0.025em;
+    margin: 0.4rem 0 1rem;
+  }
+
+  .lead-text h3 a,
+  .project-card h3 a {
+    text-decoration: none;
+  }
+
+  .lead-text h3 a:hover,
+  .project-card h3 a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--signal);
+  }
+
+  .lead-text > p:not(.meta) {
+    color: var(--ink-soft);
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+
+  .lead-text .tags {
+    margin: 1.25rem 0 1.5rem;
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+  }
+
+  .pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.5rem 2.5rem;
+    margin-top: 4rem;
+  }
+
+  .project-card .card-media {
+    display: block;
+    margin-bottom: 1.1rem;
+  }
+
+  .project-card .card-media :global(.cover-phone) {
+    height: 22rem;
+  }
+
+  .project-card h3 {
+    font-size: var(--step-3);
+    font-stretch: 82%;
+    letter-spacing: -0.015em;
+    margin: 0.3rem 0 0.5rem;
+  }
+
+  .project-card > p:last-child {
+    color: var(--ink-soft);
+    max-width: 52ch;
+  }
+
+  .card-media,
+  .lead-media {
+    transition: translate 0.4s var(--ease-out);
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .project-card:has(h3 a:hover) .card-media,
+    .lead-project:has(h3 a:hover) .lead-media {
+      translate: 0 -6px;
+    }
+  }
+
+  .all-link {
+    display: inline-block;
+    margin-top: 3rem;
+    font-size: var(--step-1);
+    font-weight: 600;
+  }
+
+  .reading {
+    margin-top: var(--section);
+  }
+
+  @media (max-width: 56rem) {
+    .about,
+    .work-head,
+    .lead-project,
+    .pair {
+      grid-template-columns: 1fr;
+    }
+    .about-photo {
+      max-width: 18rem;
+    }
+    .facts {
+      grid-template-columns: 1fr;
+    }
+    .timeline-rail {
+      left: 0;
+    }
+    .job,
+    .studies {
+      grid-template-columns: 1fr;
+    }
+    .job-head,
+    .studies h3 {
+      padding-left: 1.5rem;
+    }
+    .dot {
+      left: -6px;
+    }
+  }
+</style>

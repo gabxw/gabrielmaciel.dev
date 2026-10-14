@@ -1,0 +1,370 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import ProjectCover from '../components/ProjectCover.astro';
+import { projects, kindLabel, type Project } from '../data/projects';
+import { formatMonth, projectRoute, route, ui, type Locale } from '../i18n/ui';
+
+interface Props {
+  project: Project;
+  locale: Locale;
+}
+
+const { project: p, locale } = Astro.props;
+const t = ui[locale];
+const other: Locale = locale === 'pt' ? 'en' : 'pt';
+const copy = {
+  pt: { stack: 'Stack', when: 'Início', context: 'Contexto', kind: 'Tipo', gallery: 'Telas', crumbs: 'Caminho' },
+  en: { stack: 'Stack', when: 'Started', context: 'Context', kind: 'Type', gallery: 'Screens', crumbs: 'Breadcrumb' },
+}[locale];
+
+const index = projects.findIndex((x) => x.slug === p.slug);
+const related = [1, 2].map((offset) => projects[(index + offset) % projects.length]);
+const phones = p.gallery.filter((g) => g.phone);
+const wide = p.gallery.filter((g) => !g.phone);
+---
+
+<Base
+  locale={locale}
+  title={`${p.name} | Gabriel Maciel`}
+  description={p.summary[locale]}
+  alternate={projectRoute(p.slug, other)}
+  current="projects"
+>
+  <article class="wrap project">
+    <nav class="crumbs" aria-label={copy.crumbs}>
+      <a href={route('projects', locale)}>{t.backToProjects}</a>
+    </nav>
+
+    <header class="head">
+      <h1 class="title" data-reveal="title">{p.name}</h1>
+      <p class="lede summary" data-reveal="fade">{p.summary[locale]}</p>
+      <dl class="facts" data-reveal="stagger">
+        <div>
+          <dt>{copy.context}</dt>
+          <dd>
+            {p.live && <span class="live-dot" aria-hidden="true" />}
+            {p.context[locale]}
+          </dd>
+        </div>
+        <div>
+          <dt>{copy.when}</dt>
+          <dd><time datetime={p.start}>{formatMonth(p.start, locale)}</time></dd>
+        </div>
+        <div>
+          <dt>{copy.kind}</dt>
+          <dd>{kindLabel[p.kind][locale]}</dd>
+        </div>
+      </dl>
+      <div class="actions" data-reveal="fade">
+        {p.links.site && <a class="btn btn-primary" href={p.links.site}>{t.visit}</a>}
+        {p.links.repo && <a class:list={['btn', { 'btn-primary': !p.links.site }]} href={p.links.repo}>{t.source}</a>}
+      </div>
+    </header>
+
+    <div class:list={['hero-media', { phone: p.cover?.phone }]} data-reveal="clip">
+      <ProjectCover project={p} locale={locale} eager sizes="(min-width: 82rem) 80rem, 100vw" />
+    </div>
+
+    <div class="body">
+      <aside class="side">
+        <h2 class="side-title">{copy.stack}</h2>
+        <ul class="tags">{p.stack.map((s) => <li>{s}</li>)}</ul>
+      </aside>
+
+      <div class="sections">
+        {
+          p.sections.map((section) => (
+            <section data-reveal="fade">
+              <h2>{section.title[locale]}</h2>
+              {section.paragraphs?.map((para) => (
+                <p>{para[locale]}</p>
+              ))}
+              {section.items && (
+                <ul>
+                  {section.items.map((item) => (
+                    <li>{item[locale]}</li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))
+        }
+      </div>
+    </div>
+
+    {
+      p.gallery.length > 0 && (
+        <section class="gallery" aria-label={copy.gallery}>
+          {wide.map((g) => (
+            <figure data-reveal="clip">
+              <Image src={g.image} alt={g.alt[locale]} widths={[720, 1080, 1440]} sizes="(min-width: 82rem) 80rem, 100vw" />
+              <figcaption>{g.alt[locale]}</figcaption>
+            </figure>
+          ))}
+          {phones.length > 0 && (
+            <div class="phones">
+              {phones.map((g) => (
+                <figure data-reveal="fade">
+                  <Image src={g.image} alt={g.alt[locale]} widths={[300, 450]} sizes="(min-width: 56rem) 18rem, 45vw" />
+                  <figcaption>{g.alt[locale]}</figcaption>
+                </figure>
+              ))}
+            </div>
+          )}
+        </section>
+      )
+    }
+
+    <section class="related" aria-labelledby="related-title">
+      <h2 id="related-title" class="related-title">{t.related}</h2>
+      <ul>
+        {
+          related.map((r) => (
+            <li>
+              <a href={projectRoute(r.slug, locale)}>
+                <span class="r-name">{r.name}</span>
+                <span class="r-summary">{r.summary[locale]}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .project {
+    padding-top: clamp(1.5rem, 1rem + 2vw, 3rem);
+  }
+
+  .crumbs a {
+    display: inline-block;
+    padding-block: 0.5rem;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-weight: 550;
+  }
+
+  .crumbs a::before {
+    content: '';
+    display: inline-block;
+    width: 0.5em;
+    height: 0.5em;
+    margin-right: 0.5em;
+    border-left: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    rotate: 45deg;
+    vertical-align: 0.1em;
+  }
+
+  .crumbs a:hover {
+    color: var(--ink);
+  }
+
+  .head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 1.5rem 3rem;
+    margin-top: 2rem;
+    align-items: end;
+  }
+
+  .title {
+    font-size: clamp(3.2rem, 1rem + 8vw, 8rem);
+    font-stretch: 75%;
+    font-weight: 780;
+    letter-spacing: -0.035em;
+    line-height: 0.86;
+    grid-row: span 2;
+  }
+
+  .summary {
+    max-width: 44ch;
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2.5rem;
+  }
+
+  .facts dt {
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .facts dd {
+    margin: 0.1rem 0 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    grid-column: 2;
+  }
+
+  .hero-media {
+    margin-top: 3rem;
+  }
+
+  .hero-media.phone {
+    display: grid;
+    place-items: center;
+    padding: 2.5rem 1rem;
+    border-radius: 24px;
+    background: radial-gradient(ellipse at 50% 120%, var(--signal-wash), transparent 70%), var(--bg-raised);
+    border: 1px solid var(--line);
+  }
+
+  .hero-media.phone :global(.cover-phone) {
+    height: min(38rem, 70svh);
+    border: 0;
+  }
+
+  .body {
+    display: grid;
+    grid-template-columns: minmax(0, 0.55fr) minmax(0, 1.45fr);
+    gap: 2rem 4rem;
+    margin-top: 4.5rem;
+  }
+
+  .side {
+    position: sticky;
+    top: 6rem;
+    align-self: start;
+  }
+
+  .side-title {
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 0.75rem;
+  }
+
+  .sections {
+    display: grid;
+    gap: 3.25rem;
+    max-width: var(--measure);
+  }
+
+  .sections h2 {
+    font-size: var(--step-3);
+    font-stretch: 82%;
+    letter-spacing: -0.015em;
+    margin-bottom: 1rem;
+  }
+
+  .sections p {
+    font-size: var(--step-1);
+    line-height: 1.6;
+  }
+
+  .sections p + p {
+    margin-top: 1rem;
+  }
+
+  .sections ul {
+    display: grid;
+    gap: 0.75rem;
+    margin-block: 0.5rem 1rem;
+    padding-left: 1.25rem;
+    font-size: var(--step-1);
+    line-height: 1.55;
+  }
+
+  .sections li::marker {
+    color: var(--signal-text);
+  }
+
+  .gallery {
+    display: grid;
+    gap: 3rem;
+    margin-top: var(--section);
+  }
+
+  .gallery figure img {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+  }
+
+  figcaption {
+    margin-top: 0.75rem;
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+    max-width: 60ch;
+  }
+
+  .phones {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: 2rem;
+  }
+
+  .phones img {
+    border-radius: 22px;
+  }
+
+  .related {
+    margin-top: var(--section);
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .related-title {
+    font-size: var(--step-2);
+    font-stretch: 85%;
+  }
+
+  .related ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem 3rem;
+    margin-top: 1.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .related a {
+    display: grid;
+    gap: 0.35rem;
+    text-decoration: none;
+  }
+
+  .r-name {
+    font-size: var(--step-3);
+    font-weight: 750;
+    font-stretch: 80%;
+    letter-spacing: -0.015em;
+  }
+
+  .related a:hover .r-name {
+    text-decoration: underline;
+    text-decoration-color: var(--signal);
+  }
+
+  .r-summary {
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 56rem) {
+    .head,
+    .body,
+    .related ul {
+      grid-template-columns: 1fr;
+    }
+    .actions {
+      grid-column: auto;
+    }
+    .side {
+      position: static;
+    }
+  }
+</style>

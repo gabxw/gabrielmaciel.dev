@@ -1,0 +1,218 @@
+---
+import { route, ui, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  alternate: string;
+  current?: 'home' | 'projects' | 'books';
+}
+
+const { locale, alternate, current } = Astro.props;
+const t = ui[locale];
+const links = [
+  { key: 'home', href: route('home', locale), label: t.nav.home },
+  { key: 'projects', href: route('projects', locale), label: t.nav.projects },
+  { key: 'books', href: route('books', locale), label: t.nav.books },
+] as const;
+---
+
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="mark" href={route('home', locale)} aria-label="Gabriel Maciel, início">
+      <span class="mark-dot" aria-hidden="true"></span>
+      <span>gabriel maciel</span>
+    </a>
+
+    <nav aria-label={t.navLabel}>
+      <ul>
+        {
+          links.map((l) => (
+            <li>
+              <a href={l.href} aria-current={current === l.key ? 'page' : undefined}>
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="tools">
+      <a class="tool lang" href={alternate} hreflang={locale === 'pt' ? 'en' : 'pt-BR'} lang={locale === 'pt' ? 'en' : 'pt-BR'}>
+        <span aria-hidden="true">{t.langShort}</span>
+        <span class="visually-hidden">{t.langSwitch}</span>
+      </a>
+      <button class="tool theme-toggle" type="button" data-theme-toggle>
+        <svg class="when-light" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"></path>
+        </svg>
+        <svg class="when-dark" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"></path>
+        </svg>
+        <span class="visually-hidden when-light">{t.theme.toDark}</span>
+        <span class="visually-hidden when-dark">{t.theme.toLight}</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in oklab, var(--bg) 82%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid color-mix(in oklab, var(--line) 60%, transparent);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 4rem;
+  }
+
+  .mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-weight: 700;
+    font-stretch: 85%;
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    margin-right: auto;
+  }
+
+  .mark-dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: var(--signal);
+    box-shadow: 0 0 0 4px var(--signal-wash);
+  }
+
+  nav ul {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  nav a {
+    display: block;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    text-decoration: none;
+    color: var(--ink-soft);
+    font-weight: 550;
+  }
+
+  nav a:hover {
+    color: var(--ink);
+  }
+
+  nav a[aria-current='page'] {
+    color: var(--ink);
+    background: var(--signal-wash);
+  }
+
+  .tools {
+    display: flex;
+    gap: 0.35rem;
+    margin-left: 0.5rem;
+  }
+
+  .tool {
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: transparent;
+    text-decoration: none;
+    font-weight: 650;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  .tool:hover {
+    border-color: var(--line-strong);
+  }
+
+  .tool svg {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+
+  /* O ícone mostra o tema atual; o texto acessível descreve a ação. */
+  .when-dark {
+    display: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not(:has(meta[name='color-scheme'][content='light']))) .when-light {
+      display: none;
+    }
+    :global(:root:not(:has(meta[name='color-scheme'][content='light']))) .when-dark {
+      display: block;
+    }
+  }
+
+  :global(:root:has(meta[name='color-scheme'][content='dark'])) .when-light {
+    display: none;
+  }
+  :global(:root:has(meta[name='color-scheme'][content='dark'])) .when-dark {
+    display: block;
+  }
+
+  .when-dark.visually-hidden,
+  .when-light.visually-hidden {
+    position: absolute;
+  }
+
+  /* No celular tudo cabe em uma linha: o nome some e fica só o ponto. */
+  @media (max-width: 40rem) {
+    .bar {
+      gap: 0.25rem;
+    }
+    .mark span:last-child {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .mark {
+      min-width: 1.75rem;
+      min-height: 2.75rem;
+    }
+    nav ul {
+      gap: 0;
+    }
+    nav a {
+      padding: 0.45rem 0.5rem;
+      font-size: 0.97rem;
+    }
+    .tools {
+      margin-left: 0;
+      gap: 0.25rem;
+    }
+  }
+
+  /* Em telas bem estreitas o link "Início" já leva para a home. */
+  @media (max-width: 24rem) {
+    .mark {
+      display: none;
+    }
+    nav {
+      margin-right: auto;
+    }
+  }
+</style>

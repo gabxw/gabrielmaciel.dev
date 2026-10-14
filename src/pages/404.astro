@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base locale="pt" title="Página não encontrada | Gabriel Maciel" description="Essa página não existe." alternate="/en/">
+  <div class="wrap lost">
+    <p class="code">404</p>
+    <h1>Essa página não existe.</h1>
+    <p>O endereço pode ter mudado. Comece pelo início ou veja os projetos.</p>
+    <p lang="en">This page doesn't exist. Start from the home page or see the projects.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="/">Ir para o início</a>
+      <a class="btn" href="/projetos/">Ver projetos</a>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .lost {
+    padding-top: clamp(3rem, 8vw, 8rem);
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
+  .code {
+    font-size: clamp(5rem, 20vw, 14rem);
+    font-weight: 800;
+    font-stretch: 75%;
+    line-height: 0.8;
+    color: var(--signal-text);
+  }
+  h1 {
+    font-size: var(--step-3);
+  }
+  p:not(.code) {
+    color: var(--ink-soft);
+  }
+  .cta {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+</style>

@@ -1,0 +1,123 @@
+---
+import { contact, route, ui, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = ui[locale];
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap grid">
+    <div class="who">
+      <p class="name">Gabriel Maciel</p>
+      <p>{t.role}. {t.city}.</p>
+      <p class="clock">
+        {t.localTime}
+        <time data-clock data-locale={locale === 'pt' ? 'pt-BR' : 'en-GB'}>--:--</time>
+      </p>
+    </div>
+
+    <ul class="links">
+      <li><a href={route('home', locale)}>{t.nav.home}</a></li>
+      <li><a href={route('projects', locale)}>{t.nav.projects}</a></li>
+      <li><a href={route('books', locale)}>{t.nav.books}</a></li>
+    </ul>
+
+    <ul class="links">
+      <li><a href={`mailto:${contact.email}`}>E-mail</a></li>
+      <li><a href={contact.linkedin} rel="me">LinkedIn</a></li>
+      <li><a href={contact.github} rel="me">GitHub</a></li>
+    </ul>
+  </div>
+  <div class="wrap fine">
+    <p>© {year} Gabriel Maciel. {t.footerNote}</p>
+  </div>
+</footer>
+
+<script>
+  const el = document.querySelector<HTMLTimeElement>('[data-clock]');
+  if (el) {
+    const fmt = new Intl.DateTimeFormat(el.dataset.locale, {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'America/Sao_Paulo',
+    });
+    const tick = () => {
+      el.textContent = fmt.format(new Date());
+    };
+    tick();
+    setInterval(tick, 15_000);
+  }
+</script>
+
+<style>
+  .site-footer {
+    margin-top: var(--section);
+    border-top: 1px solid var(--line);
+    padding-block: 3rem 2rem;
+    color: var(--ink-soft);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .name {
+    color: var(--ink);
+    font-weight: 700;
+    font-stretch: 85%;
+    font-size: var(--step-2);
+    line-height: 1.1;
+    margin-bottom: 0.4rem;
+  }
+
+  .clock {
+    margin-top: 0.8rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .clock time {
+    color: var(--ink);
+    font-weight: 600;
+    margin-left: 0.35rem;
+  }
+
+  .links {
+    display: grid;
+    gap: 0.1rem;
+    align-content: start;
+    padding: 0;
+    list-style: none;
+  }
+
+  .links a {
+    display: inline-block;
+    padding-block: 0.3rem;
+    text-decoration: none;
+  }
+
+  .links a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+
+  .fine {
+    margin-top: 2.5rem;
+    font-size: var(--step--1);
+  }
+
+  @media (max-width: 40rem) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .who {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

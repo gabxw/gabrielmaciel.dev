@@ -1,0 +1,185 @@
+---
+import Base from '../layouts/Base.astro';
+import BookList from '../components/BookList.astro';
+import { books, statusLabel, type BookStatus } from '../data/books';
+import { contact, route, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = {
+  pt: {
+    title: 'Livros',
+    meta: 'O que Gabriel Maciel está lendo, já leu e quer ler.',
+    intro: 'O que estou lendo, o que já li e o que está na fila. Junto de cada um, o que ficou dele para mim.',
+    filterLabel: 'Filtrar por situação',
+    all: 'Todos',
+    emptyTitle: 'A estante ainda está sendo montada.',
+    emptyText: 'Tem um livro que mudou como você programa? Me manda a indicação.',
+    emptyCta: 'Indicar um livro',
+    subject: 'Indicação de livro',
+  },
+  en: {
+    title: 'Books',
+    meta: 'What Gabriel Maciel is reading, has read and wants to read.',
+    intro: "What I'm reading, what I've read and what's next in line. With each one, what stayed with me.",
+    filterLabel: 'Filter by status',
+    all: 'All',
+    emptyTitle: 'The shelf is still being put together.',
+    emptyText: 'Is there a book that changed how you write code? Send me the recommendation.',
+    emptyCta: 'Recommend a book',
+    subject: 'Book recommendation',
+  },
+}[locale];
+
+const statuses: BookStatus[] = ['reading', 'read', 'want'];
+const counts = Object.fromEntries(statuses.map((s) => [s, books.filter((b) => b.status === s).length]));
+---
+
+<Base locale={locale} title={`${copy.title} | Gabriel Maciel`} description={copy.meta} alternate={route('books', locale === 'pt' ? 'en' : 'pt')} current="books">
+  <div class="wrap page">
+    <header class="page-head">
+      <h1 class="page-title" data-reveal="title">{copy.title}</h1>
+      <p class="lede" data-reveal="fade">{copy.intro}</p>
+    </header>
+
+    {
+      books.length > 0 ? (
+        <>
+          <div class="filters" role="group" aria-label={copy.filterLabel} data-book-filters hidden>
+            <button type="button" data-filter="all" aria-pressed="true">
+              {copy.all} <span class="count">{books.length}</span>
+            </button>
+            {statuses
+              .filter((s) => counts[s] > 0)
+              .map((s) => (
+                <button type="button" data-filter={s} aria-pressed="false">
+                  {statusLabel[s][locale]} <span class="count">{counts[s]}</span>
+                </button>
+              ))}
+          </div>
+          <p class="visually-hidden" role="status" data-book-status />
+          <div data-book-list>
+            <BookList books={books} locale={locale} />
+          </div>
+        </>
+      ) : (
+        <div class="empty">
+          <p class="empty-title">{copy.emptyTitle}</p>
+          <p>{copy.emptyText}</p>
+          <a class="btn btn-primary" href={`mailto:${contact.email}?subject=${encodeURIComponent(copy.subject)}`}>
+            {copy.emptyCta}
+          </a>
+        </div>
+      )
+    }
+  </div>
+</Base>
+
+<script>
+  const group = document.querySelector<HTMLElement>('[data-book-filters]');
+  if (group) {
+    group.hidden = false;
+    const items = [...document.querySelectorAll<HTMLElement>('[data-book-list] .book')];
+    const status = document.querySelector<HTMLElement>('[data-book-status]');
+    group.addEventListener('click', (e) => {
+      const button = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-filter]');
+      if (!button) return;
+      const filter = button.dataset.filter!;
+      let shown = 0;
+      items.forEach((item) => {
+        const match = filter === 'all' || item.dataset.status === filter;
+        item.hidden = !match;
+        if (match) shown++;
+      });
+      group.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+      if (status) status.textContent = `${shown}`;
+    });
+  }
+</script>
+
+<style>
+  .page {
+    padding-top: clamp(2rem, 1rem + 4vw, 5rem);
+  }
+
+  .page-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem 3rem;
+    align-items: end;
+  }
+
+  .page-title {
+    font-size: clamp(3.4rem, 1rem + 9vw, 8.5rem);
+    font-stretch: 75%;
+    font-weight: 780;
+    letter-spacing: -0.035em;
+    line-height: 0.86;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 3rem;
+  }
+
+  .filters button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.45rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: transparent;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .filters button[aria-pressed='true'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+  }
+
+  .count {
+    font-weight: 400;
+    opacity: 0.7;
+  }
+
+  :global(.book[hidden]) {
+    display: none;
+  }
+
+  .empty {
+    display: grid;
+    justify-items: start;
+    gap: 0.75rem;
+    margin-top: 3.5rem;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border: 1px dashed var(--line-strong);
+    border-radius: 24px;
+    max-width: 44rem;
+  }
+
+  .empty-title {
+    font-size: var(--step-2);
+    font-weight: 700;
+    font-stretch: 85%;
+  }
+
+  .empty p:not(.empty-title) {
+    color: var(--ink-soft);
+    margin-bottom: 0.75rem;
+  }
+
+  @media (max-width: 56rem) {
+    .page-head {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

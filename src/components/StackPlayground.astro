@@ -1,0 +1,160 @@
+---
+import { toolGroups, tools } from '../data/profile';
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = {
+  pt: {
+    title: 'Ferramentas que eu uso',
+    text: 'As que estão em verde são as do dia a dia. Pode pegar e jogar: os blocos têm física de verdade.',
+    reset: 'Soltar de novo',
+    canvasLabel: 'Blocos 3D com o nome de cada ferramenta, que caem e podem ser arremessados.',
+  },
+  en: {
+    title: 'Tools I use',
+    text: 'The green ones are my everyday tools. Go ahead and throw them around: the blocks have real physics.',
+    reset: 'Drop them again',
+    canvasLabel: '3D blocks with the name of each tool, which fall and can be thrown.',
+  },
+}[locale];
+
+const daily = ['C#', '.NET', 'Laravel', 'Python', 'PostgreSQL'];
+const groups = Object.entries(toolGroups).map(([key, label]) => ({
+  label: label[locale],
+  items: tools.filter((tool) => tool.group === key).map((tool) => tool.name),
+}));
+---
+
+<section class="stack wrap" aria-labelledby="stack-title">
+  <div class="stack-copy">
+    <h2 id="stack-title" class="section-title" data-reveal="title">{copy.title}</h2>
+    <p class="lede">{copy.text}</p>
+    <dl class="groups" data-reveal="stagger">
+      {
+        groups.map((g) => (
+          <div>
+            <dt>{g.label}</dt>
+            <dd>
+              <ul class="tags">
+                {g.items.map((name) => (
+                  <li class:list={{ daily: daily.includes(name) }}>{name}</li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+    <button class="btn" type="button" data-stack-reset>{copy.reset}</button>
+  </div>
+
+  <div class="pit" data-stack data-names={JSON.stringify(tools.map((t) => t.name))} data-daily={JSON.stringify(daily)}>
+    <canvas aria-hidden="true"></canvas>
+    <p class="visually-hidden">{copy.canvasLabel}</p>
+  </div>
+</section>
+
+<script>
+  const pit = document.querySelector<HTMLElement>('[data-stack]');
+  const supportsWebGL = (() => {
+    try {
+      return !!document.createElement('canvas').getContext('webgl2');
+    } catch {
+      return false;
+    }
+  })();
+
+  if (pit && supportsWebGL) {
+    const load = () =>
+      import('../scripts/stack-physics').then(({ mountStack }) =>
+        mountStack(pit, JSON.parse(pit.dataset.names!), JSON.parse(pit.dataset.daily!)),
+      );
+    // Só baixa a física quando a seção estiver chegando perto.
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          io.disconnect();
+          load();
+        }
+      },
+      { rootMargin: '400px' },
+    );
+    io.observe(pit);
+  } else if (pit) {
+    pit.hidden = true;
+    document.querySelector<HTMLElement>('[data-stack-reset]')!.hidden = true;
+  }
+</script>
+
+<style>
+  .stack {
+    margin-top: var(--section);
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+    gap: 2.5rem 3rem;
+    align-items: center;
+  }
+
+  .stack-copy .lede {
+    margin-top: 1.1rem;
+  }
+
+  .groups {
+    display: grid;
+    gap: 1rem;
+    margin: 2rem 0 1.75rem;
+  }
+
+  dt {
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+    margin-bottom: 0.35rem;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .tags li.daily {
+    border-color: transparent;
+    background: var(--signal);
+    color: var(--signal-ink);
+    font-weight: 600;
+  }
+
+  .pit {
+    position: relative;
+    height: clamp(22rem, 48vw, 34rem);
+    border-radius: 24px;
+    background:
+      radial-gradient(ellipse at 50% 100%, var(--signal-wash), transparent 65%),
+      linear-gradient(to bottom, transparent, color-mix(in oklab, var(--line) 35%, transparent));
+    border: 1px solid var(--line);
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+
+  .pit canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .pit canvas:global(.is-grabbing) {
+    cursor: grabbing !important;
+  }
+
+  @media (max-width: 56rem) {
+    .stack {
+      grid-template-columns: 1fr;
+    }
+    .pit {
+      height: 22rem;
+    }
+  }
+</style>
