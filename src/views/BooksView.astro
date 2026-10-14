@@ -13,9 +13,12 @@ const copy = {
   pt: {
     title: 'Livros',
     meta: 'O que Gabriel Maciel está lendo, já leu e quer ler.',
-    intro: 'O que estou lendo, o que já li e o que está na fila. Junto de cada um, o que ficou dele para mim.',
-    filterLabel: 'Filtrar por situação',
+    intro: 'O que já li e o que estou lendo agora, de engenharia de software a literatura.',
+    statusLabel: 'Situação',
+    topicLabel: 'Tema',
     all: 'Todos',
+    count: (n: number) => (n === 1 ? '1 livro' : `${n} livros`),
+    none: 'Nenhum livro com esses filtros. Troque a situação ou o tema.',
     emptyTitle: 'A estante ainda está sendo montada.',
     emptyText: 'Tem um livro que mudou como você programa? Me manda a indicação.',
     emptyCta: 'Indicar um livro',
@@ -24,9 +27,12 @@ const copy = {
   en: {
     title: 'Books',
     meta: 'What Gabriel Maciel is reading, has read and wants to read.',
-    intro: "What I'm reading, what I've read and what's next in line. With each one, what stayed with me.",
-    filterLabel: 'Filter by status',
+    intro: "What I've read and what I'm reading now, from software engineering to literature.",
+    statusLabel: 'Status',
+    topicLabel: 'Topic',
     all: 'All',
+    count: (n: number) => (n === 1 ? '1 book' : `${n} books`),
+    none: 'No books match these filters. Change the status or the topic.',
     emptyTitle: 'The shelf is still being put together.',
     emptyText: 'Is there a book that changed how you write code? Send me the recommendation.',
     emptyCta: 'Recommend a book',
@@ -36,6 +42,8 @@ const copy = {
 
 const statuses: BookStatus[] = ['reading', 'read', 'want'];
 const counts = Object.fromEntries(statuses.map((s) => [s, books.filter((b) => b.status === s).length]));
+const topics = [...new Map(books.map((b) => [b.topic.en, b.topic])).values()];
+const status = statuses.filter((s) => counts[s] > 0);
 ---
 
 <Base locale={locale} title={`${copy.title} | Gabriel Maciel`} description={copy.meta} alternate={route('books', locale === 'pt' ? 'en' : 'pt')} current="books">
@@ -48,22 +56,35 @@ const counts = Object.fromEntries(statuses.map((s) => [s, books.filter((b) => b.
     {
       books.length > 0 ? (
         <>
-          <div class="filters" role="group" aria-label={copy.filterLabel} data-book-filters hidden>
-            <button type="button" data-filter="all" aria-pressed="true">
-              {copy.all} <span class="count">{books.length}</span>
-            </button>
-            {statuses
-              .filter((s) => counts[s] > 0)
-              .map((s) => (
+          <div class="filters" data-book-filters hidden>
+            <div class="filter-group" role="group" aria-label={copy.statusLabel} data-key="status">
+              <span class="filter-name" aria-hidden="true">{copy.statusLabel}</span>
+              <button type="button" data-filter="all" aria-pressed="true">
+                {copy.all} <span class="count">{books.length}</span>
+              </button>
+              {status.map((s) => (
                 <button type="button" data-filter={s} aria-pressed="false">
                   {statusLabel[s][locale]} <span class="count">{counts[s]}</span>
                 </button>
               ))}
+            </div>
+            <div class="filter-group" role="group" aria-label={copy.topicLabel} data-key="topic">
+              <span class="filter-name" aria-hidden="true">{copy.topicLabel}</span>
+              <button type="button" data-filter="all" aria-pressed="true">
+                {copy.all} <span class="count">{books.length}</span>
+              </button>
+              {topics.map((t) => (
+                <button type="button" data-filter={t.en} aria-pressed="false">
+                  {t[locale]} <span class="count">{books.filter((b) => b.topic.en === t.en).length}</span>
+                </button>
+              ))}
+            </div>
           </div>
-          <p class="visually-hidden" role="status" data-book-status />
+          <p class="visually-hidden" role="status" data-book-status data-one={copy.count(1)} data-many={copy.count(2)} />
           <div data-book-list>
             <BookList books={books} locale={locale} />
           </div>
+          <p class="none" data-books-empty hidden>{copy.none}</p>
         </>
       ) : (
         <div class="empty">
@@ -79,23 +100,31 @@ const counts = Object.fromEntries(statuses.map((s) => [s, books.filter((b) => b.
 </Base>
 
 <script>
-  const group = document.querySelector<HTMLElement>('[data-book-filters]');
-  if (group) {
-    group.hidden = false;
+  // Os dois grupos de filtro se combinam: situação e tema.
+  const filters = document.querySelector<HTMLElement>('[data-book-filters]');
+  if (filters) {
+    filters.hidden = false;
     const items = [...document.querySelectorAll<HTMLElement>('[data-book-list] .book')];
     const status = document.querySelector<HTMLElement>('[data-book-status]');
-    group.addEventListener('click', (e) => {
+    const active: Record<string, string> = { status: 'all', topic: 'all' };
+
+    filters.addEventListener('click', (e) => {
       const button = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-filter]');
       if (!button) return;
-      const filter = button.dataset.filter!;
+      const group = button.closest<HTMLElement>('[data-key]')!;
+      active[group.dataset.key!] = button.dataset.filter!;
+      group.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+
       let shown = 0;
       items.forEach((item) => {
-        const match = filter === 'all' || item.dataset.status === filter;
+        const match =
+          (active.status === 'all' || item.dataset.status === active.status) &&
+          (active.topic === 'all' || item.dataset.topic === active.topic);
         item.hidden = !match;
         if (match) shown++;
       });
-      group.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
-      if (status) status.textContent = `${shown}`;
+      document.querySelector<HTMLElement>('[data-books-empty]')!.hidden = shown > 0;
+      if (status) status.textContent = (shown === 1 ? status.dataset.one! : status.dataset.many!).replace('2', String(shown));
     });
   }
 </script>
@@ -121,10 +150,27 @@ const counts = Object.fromEntries(statuses.map((s) => [s, books.filter((b) => b.
   }
 
   .filters {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 3rem;
+  }
+
+  .filter-group {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.5rem;
-    margin-top: 3rem;
+  }
+
+  .none {
+    margin-top: 2.5rem;
+    color: var(--ink-soft);
+  }
+
+  .filter-name {
+    min-width: 5.5rem;
+    color: var(--ink-soft);
+    font-size: var(--step--1);
   }
 
   .filters button {

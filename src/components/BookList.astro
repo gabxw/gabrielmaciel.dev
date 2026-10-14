@@ -13,16 +13,16 @@ const { books, locale } = Astro.props;
 <ul class="books" data-reveal="stagger">
   {
     books.map((book) => (
-      <li class="book" data-status={book.status} data-topic={book.topic.pt}>
+      <li class="book" data-status={book.status} data-topic={book.topic.en}>
         <div class="spine" aria-hidden="true">
-          <span>{book.title}</span>
+          <span>{book.title[locale]}</span>
         </div>
         <div class="book-body">
           <p class="book-status">
             <span class:list={['status-dot', book.status]} aria-hidden="true" />
             {statusLabel[book.status][locale]}, {book.topic[locale]}
           </p>
-          <h3>{book.link ? <a href={book.link}>{book.title}</a> : book.title}</h3>
+          <h3>{book.link ? <a href={book.link}>{book.title[locale]}</a> : book.title[locale]}</h3>
           <p class="author">{book.author}</p>
           {book.note && <p class="note">{book.note[locale]}</p>}
         </div>

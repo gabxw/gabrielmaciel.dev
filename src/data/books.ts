@@ -3,7 +3,8 @@ import type { T } from '../i18n/ui';
 export type BookStatus = 'reading' | 'read' | 'want';
 
 export interface Book {
-  title: string;
+  /** Título da edição brasileira em `pt` e o título em inglês em `en`. */
+  title: T;
   author: string;
   status: BookStatus;
   topic: T;
@@ -18,5 +19,56 @@ export const statusLabel: Record<BookStatus, T> = {
   want: { pt: 'Quero ler', en: 'Want to read' },
 };
 
-/** A lista vem do Gabriel. Enquanto estiver vazia, a página mostra o convite para recomendar um livro. */
-export const books: Book[] = [];
+const engineering: T = { pt: 'Engenharia de software', en: 'Software engineering' };
+const literature: T = { pt: 'Literatura', en: 'Literature' };
+
+export const books: Book[] = [
+  {
+    title: { pt: 'Flores para Algernon', en: 'Flowers for Algernon' },
+    author: 'Daniel Keyes',
+    status: 'reading',
+    topic: literature,
+  },
+  {
+    title: { pt: 'O Programador Pragmático', en: 'The Pragmatic Programmer' },
+    author: 'David Thomas, Andrew Hunt',
+    status: 'read',
+    topic: engineering,
+  },
+  {
+    title: { pt: 'Fundamentos da Arquitetura de Software', en: 'Fundamentals of Software Architecture' },
+    author: 'Mark Richards, Neal Ford',
+    status: 'read',
+    topic: engineering,
+  },
+  {
+    title: { pt: 'Projetando Aplicações com Uso Intensivo de Dados', en: 'Designing Data-Intensive Applications' },
+    author: 'Martin Kleppmann',
+    status: 'read',
+    topic: engineering,
+  },
+  {
+    title: { pt: 'Código Limpo', en: 'Clean Code' },
+    author: 'Robert C. Martin',
+    status: 'read',
+    topic: engineering,
+  },
+  {
+    title: { pt: 'Crime e Castigo', en: 'Crime and Punishment' },
+    author: 'Fiódor Dostoiévski',
+    status: 'read',
+    topic: literature,
+  },
+  {
+    title: { pt: 'Memórias Póstumas de Brás Cubas', en: 'The Posthumous Memoirs of Brás Cubas' },
+    author: 'Machado de Assis',
+    status: 'read',
+    topic: literature,
+  },
+  {
+    title: { pt: 'O Pequeno Príncipe', en: 'The Little Prince' },
+    author: 'Antoine de Saint-Exupéry',
+    status: 'read',
+    topic: literature,
+  },
+];
