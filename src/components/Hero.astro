@@ -10,17 +10,19 @@ const t = ui[locale];
 
 const copy = {
   pt: {
-    lede: 'Gabriel Maciel é desenvolvedor de software em Belo Horizonte/MG, com foco em backend. Desde 2023 constrói sistemas corporativos, APIs, integrações, automações e produtos SaaS com C#, .NET, PHP, Laravel, Python, Node.js, TypeScript, React e PostgreSQL, com infraestrutura Docker e Linux.',
+    lede: 'Gabriel Maciel é desenvolvedor de software em Belo Horizonte/MG, com foco em backend. Programa desde 2023 e atualmente constrói sistemas corporativos, APIs, integrações, automações e produtos SaaS com C#, .NET, PHP, Laravel, Python, Node.js, TypeScript, React e PostgreSQL, com infraestrutura Docker e Linux.',
     now: 'Atualmente é desenvolvedor full stack no Grupo Roma Brasil e criador do ZapBebidas e do AgendeCorte.',
     drag: 'Arraste o globo para girar',
+    touch: 'Toque no globo e arraste para girar',
     scroll: 'Role para continuar',
     coords: '19,92° S, 43,94° O',
     canvasLabel: 'Globo 3D feito de partículas, com Belo Horizonte marcada e arcos saindo dela para outras cidades do mundo.',
   },
   en: {
-    lede: 'Gabriel Maciel is a backend-focused software developer in Belo Horizonte, Brazil. Since 2023 he has been building enterprise systems, APIs, integrations, automations and SaaS products with C#, .NET, PHP, Laravel, Python, Node.js, TypeScript, React and PostgreSQL, running on Docker and Linux.',
+    lede: 'Gabriel Maciel is a backend-focused software developer in Belo Horizonte, Brazil. He has been programming since 2023 and currently builds enterprise systems, APIs, integrations, automations and SaaS products with C#, .NET, PHP, Laravel, Python, Node.js, TypeScript, React and PostgreSQL, running on Docker and Linux.',
     now: 'He is currently a full stack developer at Grupo Roma Brasil and the creator of ZapBebidas and AgendeCorte.',
     drag: 'Drag the globe to spin it',
+    touch: 'Tap the globe and drag to spin it',
     scroll: 'Scroll to continue',
     coords: '19.92° S, 43.94° W',
     canvasLabel: '3D globe made of particles, with Belo Horizonte marked and arcs leaving it toward other cities around the world.',
@@ -54,6 +56,7 @@ const copy = {
 
   <div class="wrap hero-foot" data-hero-fade>
     <p class="drag-hint" data-drag-hint hidden>{copy.drag}</p>
+    <p class="touch-hint" data-touch-hint hidden>{copy.touch}</p>
     <a class="scroll-cue" href="#about-title">
       <span>{copy.scroll}</span>
       <span class="cue-line" aria-hidden="true"></span>
@@ -90,7 +93,8 @@ const copy = {
     const start = () =>
       import('../scripts/world').then(({ mountWorld }) => {
         mountWorld({ canvas, hero, label: document.querySelector<HTMLElement>('[data-bh-label]') });
-        if (matchMedia('(pointer: fine)').matches) document.querySelector<HTMLElement>('[data-drag-hint]')!.hidden = false;
+        const fine = matchMedia('(pointer: fine)').matches;
+        document.querySelector<HTMLElement>(fine ? '[data-drag-hint]' : '[data-touch-hint]')!.hidden = false;
       });
     if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 500 });
     else setTimeout(start, 150);
@@ -229,9 +233,28 @@ const copy = {
     font-size: var(--step--1);
   }
 
-  .drag-hint {
+  .drag-hint,
+  .touch-hint {
     margin-left: auto;
     order: 2;
+  }
+
+  .touch-hint {
+    max-width: 9rem;
+    text-align: right;
+    animation: hint-pulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes hint-pulse {
+    50% {
+      color: var(--signal-text);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .touch-hint {
+      animation: none;
+    }
   }
 
   .scroll-cue {

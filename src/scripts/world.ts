@@ -55,6 +55,8 @@ const vertex = /* glsl */ `
   uniform vec2 uMouse;
   uniform float uMouseForce;
   uniform float uAspect;
+  uniform vec2 uShockPos;
+  uniform float uShockAge;
 
   varying float vAlpha;
   varying float vTone;
@@ -105,11 +107,20 @@ const vertex = /* glsl */ `
     float push = smoothstep(0.32, 0., length(d)) * uMouseForce;
     clip.xy += normalize(d + 1e-5) * push * 0.07 * clip.w;
 
+    // Onda de choque: um anel que sai do ponto tocado e empurra as partículas.
+    vec2 sd = ndc - uShockPos;
+    sd.x *= uAspect;
+    float sdist = length(sd);
+    float ringR = uShockAge * 1.7;
+    float band = smoothstep(0.22, 0., abs(sdist - ringR));
+    float shock = band * exp(-uShockAge * 2.2);
+    clip.xy += normalize(sd + 1e-5) * shock * 0.16 * clip.w;
+
     gl_Position = clip;
-    gl_PointSize = uSize * (0.55 + aRand.z * 0.9) * uPixelRatio / -mv.z;
+    gl_PointSize = uSize * (0.55 + aRand.z * 0.9) * (1. + shock * 1.4) * uPixelRatio / -mv.z;
 
     float globeAlpha = mix(0.18, 1., front);
-    vAlpha = mix(globeAlpha, 0.6, max(t1, t2)) * intro;
+    vAlpha = min(1., mix(globeAlpha, 0.6, max(t1, t2)) + shock * 0.8) * intro;
     vTone = aRand.w;
   }
 `;
@@ -226,6 +237,8 @@ export function mountWorld({ canvas, hero, label }: WorldOptions) {
     uMouse: { value: new THREE.Vector2(9, 9) },
     uMouseForce: { value: 0 },
     uAspect: { value: innerWidth / innerHeight },
+    uShockPos: { value: new THREE.Vector2(9, 9) },
+    uShockAge: { value: 10 },
     uColorA: { value: new THREE.Color() },
     uColorB: { value: new THREE.Color() },
     uOpacity: { value: 1 },
@@ -310,6 +323,8 @@ export function mountWorld({ canvas, hero, label }: WorldOptions) {
   // endereço do celular aparece ou some. Assim o globo não pula durante a rolagem.
   let lastW = 0;
   let lastH = 0;
+  const baseOffset = new THREE.Vector3();
+  let baseScale = 1;
   function layout() {
     const w = canvas.clientWidth || innerWidth;
     const h = canvas.clientHeight || innerHeight;
@@ -331,8 +346,8 @@ export function mountWorld({ canvas, hero, label }: WorldOptions) {
       uniforms.uGlobeOffset.value.set(visibleW * 0.21, -0.05, 0);
       uniforms.uGlobeScale.value = 0.84;
     }
-    globeGroup.position.copy(uniforms.uGlobeOffset.value);
-    globeGroup.scale.setScalar(uniforms.uGlobeScale.value);
+    baseOffset.copy(uniforms.uGlobeOffset.value);
+    baseScale = uniforms.uGlobeScale.value;
   }
   layout();
   addEventListener('resize', layout);
@@ -362,16 +377,36 @@ export function mountWorld({ canvas, hero, label }: WorldOptions) {
   hero.addEventListener('pointerup', endDrag);
   hero.addEventListener('pointercancel', endDrag);
 
-  // Posição do ponteiro na tela, para empurrar as partículas.
+  // Posição do ponteiro na tela, para empurrar as partículas. No celular é o dedo:
+  // empurra enquanto encosta na tela e solta quando o dedo sai.
   let mouseTarget = 0;
+  const toNdc = (e: PointerEvent, v: THREE.Vector2) => v.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
   addEventListener('pointermove', (e) => {
-    uniforms.uMouse.value.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
-    mouseTarget = finePointer && !reduced ? 1 : 0;
-  });
+    toNdc(e, uniforms.uMouse.value);
+    if (!reduced && (finePointer || e.pointerType !== 'mouse')) mouseTarget = finePointer ? 1 : 1.5;
+  }, { passive: true });
+  addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') return;
+    toNdc(e, uniforms.uMouse.value);
+    if (!reduced) mouseTarget = 1.5;
+  }, { passive: true });
+  const release = (e: PointerEvent) => {
+    if (e.pointerType !== 'mouse') mouseTarget = 0;
+  };
+  addEventListener('pointerup', release, { passive: true });
+  addEventListener('pointercancel', release, { passive: true });
   document.addEventListener('pointerleave', () => (mouseTarget = 0));
+
+  // Tocar ou clicar no topo solta uma onda de choque a partir do ponto.
+  hero.addEventListener('pointerdown', (e) => {
+    if (reduced || (e.target as HTMLElement).closest('a, button')) return;
+    toNdc(e, uniforms.uShockPos.value);
+    uniforms.uShockAge.value = 0;
+  });
 
   // Rolagem: globo vira terreno, terreno vira galáxia.
   const morph = { a: 0, b: 0 };
+  const rise = { value: 0 };
   if (!reduced) {
     const about = document.querySelector('#about-title');
     const work = document.querySelector('#work-title');
@@ -381,6 +416,8 @@ export function mountWorld({ canvas, hero, label }: WorldOptions) {
     if (work) {
       gsap.to(morph, { b: 1, ease: 'none', scrollTrigger: { trigger: work, start: 'top 105%', end: 'top 25%', scrub: 0.8 } });
     }
+    // Celular: ao rolar o topo, o globo sobe do rodapé e cresce antes de virar terreno.
+    gsap.to(rise, { value: 1, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom 30%', scrub: 0.6 } });
     // Entrada: as partículas se juntam no globo.
     gsap.to(uniforms.uIntro, { value: 1, duration: 2.8, ease: 'power3.out', delay: 0.15 });
   }
@@ -401,6 +438,7 @@ export function mountWorld({ canvas, hero, label }: WorldOptions) {
 
   let running = true;
   let last = performance.now();
+  let lastScroll = scrollY;
   function frame(now: number) {
     if (!running) return;
     const dt = Math.min((now - last) / 1000, 0.05);
@@ -414,6 +452,18 @@ export function mountWorld({ canvas, hero, label }: WorldOptions) {
     }
 
     uniforms.uMorph.value = morph.a + morph.b;
+    uniforms.uShockAge.value += dt;
+
+    // Rolar rápido acelera a rotação do globo.
+    const scrollDelta = scrollY - lastScroll;
+    lastScroll = scrollY;
+    if (!reduced) spinVelocity += Math.max(-1.5, Math.min(1.5, scrollDelta * 0.004));
+
+    const lift = small() ? rise.value : rise.value * 0.25;
+    uniforms.uGlobeOffset.value.set(baseOffset.x, baseOffset.y + lift * (small() ? 1.75 : 0.3), baseOffset.z);
+    uniforms.uGlobeScale.value = baseScale * (1 + lift * (small() ? 0.22 : 0.08));
+    globeGroup.position.copy(uniforms.uGlobeOffset.value);
+    globeGroup.scale.setScalar(uniforms.uGlobeScale.value);
     uniforms.uMouseForce.value += (mouseTarget - uniforms.uMouseForce.value) * Math.min(dt * 4, 1);
 
     // Marcador pulsa; arcos e marcador somem quando o globo vira outra coisa.

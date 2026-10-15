@@ -71,6 +71,7 @@ const clockLabel = locale === 'pt' ? 'Horário em Belo Horizonte' : 'Time in Bel
         <span class="visually-hidden when-dark">{t.theme.toLight}</span>
       </button>
     </div>
+    <span class="progress" data-progress aria-hidden="true"></span>
   </div>
 </header>
 
@@ -116,10 +117,15 @@ const clockLabel = locale === 'pt' ? 'Horário em Belo Horizonte' : 'Time in Bel
     document.fonts?.ready.then(() => moveTo(current, true));
   }
 
-  // Ao rolar, a barra fica mais sólida.
+  // Ao rolar, a barra fica mais sólida e a linha verde mostra quanto da página já foi lida.
   const header = document.querySelector<HTMLElement>('[data-header]');
+  const progress = document.querySelector<HTMLElement>('[data-progress]');
   if (header) {
-    const update = () => header.classList.toggle('is-scrolled', scrollY > 24);
+    const update = () => {
+      header.classList.toggle('is-scrolled', scrollY > 24);
+      const max = document.documentElement.scrollHeight - innerHeight;
+      if (progress) progress.style.transform = `scaleX(${max > 0 ? Math.min(1, scrollY / max) : 0})`;
+    };
     update();
     addEventListener('scroll', update, { passive: true });
   }
@@ -147,6 +153,24 @@ const clockLabel = locale === 'pt' ? 'Horário em Belo Horizonte' : 'Time in Bel
     backdrop-filter: blur(16px) saturate(1.4);
     -webkit-backdrop-filter: blur(16px) saturate(1.4);
     transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
+  }
+
+  .bar {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress {
+    position: absolute;
+    left: 1.5rem;
+    right: 1.5rem;
+    bottom: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--signal);
+    transform: scaleX(0);
+    transform-origin: left;
+    pointer-events: none;
   }
 
   .site-header:global(.is-scrolled) .bar {
