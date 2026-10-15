@@ -285,14 +285,17 @@ const copy = {
       align-content: start;
       padding-top: 0.5rem;
     }
-    .hero-intro {
-      /* Fundo levemente opaco para o texto ficar legível sobre o globo. */
-      padding: 1rem;
-      margin-inline: -1rem;
-      border-radius: var(--radius);
-      background: color-mix(in oklab, var(--bg) 70%, transparent);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+    /* Esfumado sem bordas atrás do texto: o globo some aos poucos em vez de cortar. */
+    .hero-inner {
+      position: relative;
+    }
+    .hero-inner::before {
+      content: '';
+      position: absolute;
+      inset: -2rem -1rem -3rem;
+      z-index: -1;
+      background: radial-gradient(120% 75% at 30% 45%, var(--bg) 35%, color-mix(in oklab, var(--bg) 70%, transparent) 60%, transparent 85%);
+      pointer-events: none;
     }
     .bh-label {
       display: none;

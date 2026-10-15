@@ -16,18 +16,18 @@
 
   /* Paleta */
   --green-400: #4ade80;
-  --bg: light-dark(#eef3ee, #0c1411);
-  --bg-raised: light-dark(#f8fbf7, #121d18);
-  --ink: light-dark(#0f1c15, #e4ede7);
-  --ink-soft: light-dark(#4a5e53, #94a89d);
-  --line: light-dark(#cfdbd2, #22332b);
-  --line-strong: light-dark(#7a9183, #56705f);
+  --bg: light-dark(#f5f6f2, #0c1411);
+  --bg-raised: light-dark(#ffffff, #121d18);
+  --ink: light-dark(#0c1611, #e4ede7);
+  --ink-soft: light-dark(#4f5d55, #94a89d);
+  --line: light-dark(#e1e5de, #22332b);
+  --line-strong: light-dark(#7d8a81, #56705f);
   /* green-400 é o sinal: preenchimentos, traços e pontos vivos. Texto em verde
      no tema claro usa um tom mais escuro para manter o contraste. */
   --signal: var(--green-400);
   --signal-text: light-dark(#166534, #4ade80);
   --signal-ink: #052e16;
-  --signal-wash: light-dark(rgb(74 222 128 / 0.16), rgb(74 222 128 / 0.1));
+  --signal-wash: light-dark(rgb(34 197 94 / 0.12), rgb(74 222 128 / 0.1));
   --warn: light-dark(#b45309, #fbbf24);
 
   /* Tipografia */
@@ -237,6 +237,26 @@ button {
 .btn-primary:hover {
   background: color-mix(in oklab, var(--signal) 85%, white);
   border-color: transparent;
+}
+
+/* No claro o verde-claro some no fundo: o botão principal vira escuro com o verde no texto. */
+@media (prefers-color-scheme: light) {
+  :root:not(:has(meta[name='color-scheme'][content='dark'])) .btn-primary {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--green-400);
+  }
+  :root:not(:has(meta[name='color-scheme'][content='dark'])) .btn-primary:hover {
+    background: #1d2e25;
+  }
+}
+:root:has(meta[name='color-scheme'][content='light']) .btn-primary {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--green-400);
+}
+:root:has(meta[name='color-scheme'][content='light']) .btn-primary:hover {
+  background: #1d2e25;
 }
 .btn svg {
   width: 1.1em;

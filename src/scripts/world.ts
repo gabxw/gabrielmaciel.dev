@@ -26,7 +26,7 @@ const DESTINATIONS = [
 
 const palette = {
   dark: { a: new THREE.Color('#4ade80'), b: new THREE.Color('#bbf7d0'), arc: new THREE.Color('#4ade80'), opacity: 1, blending: THREE.AdditiveBlending },
-  light: { a: new THREE.Color('#15803d'), b: new THREE.Color('#22c55e'), arc: new THREE.Color('#16a34a'), opacity: 0.9, blending: THREE.NormalBlending },
+  light: { a: new THREE.Color('#166534'), b: new THREE.Color('#22c55e'), arc: new THREE.Color('#16a34a'), opacity: 0.85, blending: THREE.NormalBlending },
 };
 
 /** Latitude e longitude para um ponto na esfera, com Belo Horizonte de frente para a câmera. */
@@ -324,8 +324,8 @@ export function mountWorld({ canvas, hero, label }: WorldOptions) {
     const visibleW = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z * camera.aspect;
     if (small()) {
       // No celular o globo cabe na largura da tela, mais para baixo, atrás do texto.
-      uniforms.uGlobeOffset.value.set(0, -1.35, 0);
-      uniforms.uGlobeScale.value = Math.min(0.8, (visibleW * 0.46) / RADIUS);
+      uniforms.uGlobeOffset.value.set(0, -1.95, 0);
+      uniforms.uGlobeScale.value = Math.min(0.86, (visibleW * 0.5) / RADIUS);
     } else {
       // Desloca proporcionalmente à largura visível, para o globo ficar na metade direita.
       uniforms.uGlobeOffset.value.set(visibleW * 0.21, -0.05, 0);
@@ -428,8 +428,10 @@ export function mountWorld({ canvas, hero, label }: WorldOptions) {
 
     // Fora do topo o fundo fica mais discreto, para o texto ser lido com conforto.
     const base = palette[currentScheme()].opacity;
-    // No celular o texto ocupa a largura toda, então o fundo apaga mais.
-    const fade = small() ? 0.75 : 0.58;
+    // Fora do topo o fundo apaga: mais no celular (texto na largura toda) e muito mais
+    // no tema claro, onde pontos escuros longe do globo parecem sujeira.
+    const light = currentScheme() === 'light';
+    const fade = light ? 0.86 : small() ? 0.75 : 0.58;
     uniforms.uOpacity.value = base * (1 - Math.min(uniforms.uMorph.value, 1) * fade);
 
     renderer.render(scene, camera);
