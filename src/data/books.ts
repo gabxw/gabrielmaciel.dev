@@ -9,6 +9,9 @@ import codigoLimpo from '../assets/books/codigo-limpo.jpg';
 import crimeECastigo from '../assets/books/crime-e-castigo.jpg';
 import brasCubas from '../assets/books/bras-cubas.jpg';
 import pequenoPrincipe from '../assets/books/pequeno-principe.jpg';
+import nacoesFracassam from '../assets/books/nacoes-fracassam.jpg';
+import formacaoEconomica from '../assets/books/formacao-economica.jpg';
+import teoriaGeral from '../assets/books/teoria-geral.jpg';
 
 export type BookStatus = 'reading' | 'read' | 'want';
 
@@ -36,6 +39,7 @@ export const statusLabel: Record<BookStatus, T> = {
 
 const engineering: T = { pt: 'Engenharia de software', en: 'Software engineering' };
 const literature: T = { pt: 'Literatura', en: 'Literature' };
+const economics: T = { pt: 'Economia', en: 'Economics' };
 
 /** A ordem aqui é a ordem em que os livros aparecem na estante. */
 export const books: Book[] = [
@@ -102,5 +106,29 @@ export const books: Book[] = [
     topic: literature,
     cover: brasCubas,
     link: amazon('8582850018'),
+  },
+  {
+    title: { pt: 'Por Que as Nações Fracassam', en: 'Why Nations Fail' },
+    author: 'Daron Acemoglu, James A. Robinson',
+    status: 'read',
+    topic: economics,
+    cover: nacoesFracassam,
+    link: amazon('6555605405'),
+  },
+  {
+    title: { pt: 'Formação Econômica do Brasil', en: 'The Economic Growth of Brazil' },
+    author: 'Celso Furtado',
+    status: 'read',
+    topic: economics,
+    cover: formacaoEconomica,
+    link: amazon('8535909524'),
+  },
+  {
+    title: { pt: 'Teoria Geral do Emprego, do Juro e da Moeda', en: 'The General Theory of Employment, Interest and Money' },
+    author: 'John Maynard Keynes',
+    status: 'read',
+    topic: economics,
+    cover: teoriaGeral,
+    link: amazon('8502180355'),
   },
 ];
