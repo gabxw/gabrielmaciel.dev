@@ -125,9 +125,10 @@ const copy = {
   /* O canvas fica fixo atrás da página inteira; as formas mudam com a rolagem. */
   .world {
     position: fixed;
-    inset: 0;
+    inset: 0 auto auto 0;
     width: 100vw;
     height: 100vh;
+    height: 100lvh;
     z-index: -1;
     pointer-events: none;
     opacity: 0;
@@ -293,7 +294,7 @@ const copy = {
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
     }
-    .bh-label span {
+    .bh-label {
       display: none;
     }
   }

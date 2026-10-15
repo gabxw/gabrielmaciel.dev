@@ -165,14 +165,17 @@ export function mountWorld({ canvas, hero, label }: WorldOptions) {
   const small = () => innerWidth < 900;
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, small() ? 1.5 : 2));
+  // Em tela pequena, menos pixels: o globo continua nítido e o celular não esquenta.
+  renderer.setPixelRatio(Math.min(devicePixelRatio, small() ? 1.25 : 2));
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 100);
   camera.position.set(0, 0, 8);
 
   // Geometria: mesma quantidade de partículas em todas as formas.
-  const count = landPoints.length / 2;
+  // No celular usamos metade dos pontos, pulando um sim e um não.
+  const stride = small() ? 2 : 1;
+  const count = Math.floor(landPoints.length / 2 / stride);
   const globe = new Float32Array(count * 3);
   const wave = new Float32Array(count * 3);
   const galaxy = new Float32Array(count * 3);
@@ -182,7 +185,8 @@ export function mountWorld({ canvas, hero, label }: WorldOptions) {
   const cols = Math.ceil(Math.sqrt(count * 2.4));
   const rows = Math.ceil(count / cols);
   for (let i = 0; i < count; i++) {
-    const v = toSphere(landPoints[i * 2] / 10, landPoints[i * 2 + 1] / 10);
+    const src = i * stride;
+    const v = toSphere(landPoints[src * 2] / 10, landPoints[src * 2 + 1] / 10);
     globe.set([v.x, v.y, v.z], i * 3);
 
     const c = i % cols;
@@ -302,9 +306,16 @@ export function mountWorld({ canvas, hero, label }: WorldOptions) {
   window.addEventListener('schemechange', applyScheme);
 
   // Onde o globo fica: à direita no desktop, atrás do texto no celular.
+  // O tamanho vem do próprio canvas (100lvh no CSS), que não muda quando a barra de
+  // endereço do celular aparece ou some. Assim o globo não pula durante a rolagem.
+  let lastW = 0;
+  let lastH = 0;
   function layout() {
-    const w = innerWidth;
-    const h = innerHeight;
+    const w = canvas.clientWidth || innerWidth;
+    const h = canvas.clientHeight || innerHeight;
+    if (w === lastW && h === lastH) return;
+    lastW = w;
+    lastH = h;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
@@ -417,7 +428,9 @@ export function mountWorld({ canvas, hero, label }: WorldOptions) {
 
     // Fora do topo o fundo fica mais discreto, para o texto ser lido com conforto.
     const base = palette[currentScheme()].opacity;
-    uniforms.uOpacity.value = base * (1 - Math.min(uniforms.uMorph.value, 1) * 0.58);
+    // No celular o texto ocupa a largura toda, então o fundo apaga mais.
+    const fade = small() ? 0.75 : 0.58;
+    uniforms.uOpacity.value = base * (1 - Math.min(uniforms.uMorph.value, 1) * fade);
 
     renderer.render(scene, camera);
     placeLabel();

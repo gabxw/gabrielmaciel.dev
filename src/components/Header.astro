@@ -49,6 +49,12 @@ const clockLabel = locale === 'pt' ? 'Horário em Belo Horizonte' : 'Time in Bel
     </p>
 
     <div class="tools">
+      <button class="tool term-btn" type="button" data-open-terminal title={locale === 'pt' ? 'Terminal (tecla ` ou Ctrl+K)' : 'Terminal (` key or Ctrl+K)'}>
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m5 7 5 5-5 5M12 17h7"></path>
+        </svg>
+        <span class="visually-hidden">{locale === 'pt' ? 'Abrir terminal' : 'Open terminal'}</span>
+      </button>
       <a class="tool lang" href={alternate} hreflang={locale === 'pt' ? 'en' : 'pt-BR'} lang={locale === 'pt' ? 'en' : 'pt-BR'}>
         <span aria-hidden="true">{t.langShort}</span>
         <span class="visually-hidden">{t.langSwitch}</span>
@@ -329,6 +335,9 @@ const clockLabel = locale === 'pt' ? 'Horário em Belo Horizonte' : 'Time in Bel
 
   /* Celular: o nome vira só o ponto e o relógio dá lugar aos links. */
   @media (max-width: 40rem) {
+    .term-btn {
+      display: none;
+    }
     .site-header {
       padding-top: 0.5rem;
     }

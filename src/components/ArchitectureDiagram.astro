@@ -1,0 +1,232 @@
+---
+import { diagrams, type Diagram, type DiagramNode } from '../data/diagrams';
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  name: keyof typeof diagrams;
+  locale: Locale;
+}
+
+const { name, locale } = Astro.props;
+const diagram: Diagram = diagrams[name];
+
+interface Layout {
+  cellW: number;
+  cellH: number;
+  nodeW: number;
+  nodeH: number;
+  pad: number;
+}
+
+const wideLayout: Layout = { cellW: 282, cellH: 150, nodeW: 160, nodeH: 66, pad: 24 };
+const tallLayout: Layout = { cellW: 254, cellH: 132, nodeW: 150, nodeH: 64, pad: 20 };
+
+/** Calcula posições, arestas e tamanho do SVG para uma das duas orientações. */
+function build(layout: Layout, transpose: boolean) {
+  const pos = (n: DiagramNode) => {
+    const c = transpose ? n.row : n.col;
+    const r = transpose ? n.col : n.row;
+    return { x: layout.pad + c * layout.cellW, y: layout.pad + r * layout.cellH };
+  };
+  const nodes = diagram.nodes.map((n) => ({ ...n, ...pos(n) }));
+  const byId = new Map(nodes.map((n) => [n.id, n]));
+  const cols = Math.max(...nodes.map((n) => (n.x - layout.pad) / layout.cellW)) + 1;
+  const rows = Math.max(...nodes.map((n) => (n.y - layout.pad) / layout.cellH)) + 1;
+  const width = layout.pad * 2 + (cols - 1) * layout.cellW + layout.nodeW;
+  const height = layout.pad * 2 + (rows - 1) * layout.cellH + layout.nodeH;
+
+  // A linha sai da borda de uma caixa e chega na borda da outra.
+  const edgePoint = (cx: number, cy: number, dx: number, dy: number) => {
+    const hw = layout.nodeW / 2 + 4;
+    const hh = layout.nodeH / 2 + 4;
+    const t = Math.min(dx === 0 ? Infinity : hw / Math.abs(dx), dy === 0 ? Infinity : hh / Math.abs(dy));
+    return { x: cx + dx * t, y: cy + dy * t };
+  };
+
+  const edges = diagram.edges.map((e) => {
+    const a = byId.get(e.from)!;
+    const b = byId.get(e.to)!;
+    const ax = a.x + layout.nodeW / 2;
+    const ay = a.y + layout.nodeH / 2;
+    const bx = b.x + layout.nodeW / 2;
+    const by = b.y + layout.nodeH / 2;
+    const len = Math.hypot(bx - ax, by - ay);
+    const dx = (bx - ax) / len;
+    const dy = (by - ay) / len;
+    const start = edgePoint(ax, ay, dx, dy);
+    const end = edgePoint(bx, by, -dx, -dy);
+    const vertical = Math.abs(dy) > Math.abs(dx);
+    const mx = (start.x + end.x) / 2;
+    const my = (start.y + end.y) / 2;
+    return {
+      d: `M${start.x.toFixed(1)} ${start.y.toFixed(1)} L${end.x.toFixed(1)} ${end.y.toFixed(1)}`,
+      label: e.label?.[locale],
+      lx: vertical ? mx + 10 : mx,
+      ly: vertical ? my + 4 : my - 9,
+      anchor: vertical ? 'start' : 'middle',
+    };
+  });
+
+  return { nodes, edges, width, height };
+}
+
+const wide = build(wideLayout, false);
+const tall = build(tallLayout, true);
+const views = [
+  { key: 'wide', data: wide, layout: wideLayout },
+  { key: 'tall', data: tall, layout: tallLayout },
+];
+const arrowId = `seta-${name}`;
+---
+
+<figure class="arch">
+  {
+    views.map(({ key, data, layout }) => (
+      <svg
+        class:list={['arch-svg', `arch-${key}`]}
+        viewBox={`0 0 ${data.width} ${data.height}`}
+        aria-hidden="true"
+      >
+        <defs>
+          <marker id={`${arrowId}-${key}`} viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" class="arrow" />
+          </marker>
+        </defs>
+        {data.edges.map((e) => (
+          <g class="edge">
+            <path d={e.d} class="edge-line" marker-end={`url(#${arrowId}-${key})`} />
+            <path d={e.d} class="edge-flow" />
+            {e.label && (
+              <text x={e.lx} y={e.ly} text-anchor={e.anchor} class="edge-label">
+                {e.label}
+              </text>
+            )}
+          </g>
+        ))}
+        {data.nodes.map((n) => (
+          <g class:list={['node', { accent: n.accent }]} transform={`translate(${n.x} ${n.y})`}>
+            <rect width={layout.nodeW} height={layout.nodeH} rx="10" />
+            <circle cx={layout.nodeW - 12} cy="12" r="3.5" class="led" />
+            <text x="14" y={layout.nodeH / 2 - 3} class="node-title">
+              {n.title}
+            </text>
+            <text x="14" y={layout.nodeH / 2 + 15} class="node-sub">
+              {n.sub[locale]}
+            </text>
+          </g>
+        ))}
+      </svg>
+    ))
+  }
+  <figcaption class="arch-caption">{diagram.summary[locale]}</figcaption>
+</figure>
+
+<style>
+  .arch {
+    margin: 0;
+    padding: clamp(1rem, 3vw, 1.75rem);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--line-strong) 55%, transparent) 1px, transparent 0) 0 0 / 18px 18px,
+      var(--bg-raised);
+  }
+
+  .arch-svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .arch-tall {
+    display: none;
+    max-width: 30rem;
+    margin-inline: auto;
+  }
+
+  @media (max-width: 40rem) {
+    .arch-wide {
+      display: none;
+    }
+    .arch-tall {
+      display: block;
+    }
+  }
+
+  .node rect {
+    fill: var(--bg);
+    stroke: var(--line-strong);
+    stroke-width: 1.2;
+  }
+
+  .node.accent rect {
+    stroke: var(--signal-text);
+    stroke-width: 1.6;
+  }
+
+  .led {
+    fill: var(--signal);
+  }
+
+  .node-title {
+    fill: var(--ink);
+    font: 700 15px var(--font-sans);
+    font-stretch: 90%;
+  }
+
+  .node-sub {
+    fill: var(--ink-soft);
+    font: 400 11.5px var(--font-sans);
+  }
+
+  .edge-line {
+    stroke: var(--line-strong);
+    stroke-width: 1.4;
+    fill: none;
+  }
+
+  .arrow {
+    fill: var(--line-strong);
+  }
+
+  /* Pulsos andando na direção do fluxo. */
+  .edge-flow {
+    stroke: var(--signal);
+    stroke-width: 2;
+    fill: none;
+    stroke-dasharray: 6 22;
+    stroke-linecap: round;
+    animation: flow 1.6s linear infinite;
+  }
+
+  @keyframes flow {
+    to {
+      stroke-dashoffset: -28;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .edge-flow {
+      animation: none;
+      stroke-dasharray: none;
+      opacity: 0;
+    }
+  }
+
+  .edge-label {
+    fill: var(--ink-soft);
+    font: 500 11px var(--font-mono);
+    paint-order: stroke;
+    stroke: var(--bg-raised);
+    stroke-width: 5px;
+    stroke-linejoin: round;
+  }
+
+  .arch-caption {
+    margin-top: 1.25rem;
+    max-width: var(--measure);
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+    line-height: 1.6;
+  }
+</style>

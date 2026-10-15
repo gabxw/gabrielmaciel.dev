@@ -10,6 +10,7 @@ import { books } from '../data/books';
 import { jobs, studies } from '../data/profile';
 import { formatMonth, projectRoute, route, ui, type Locale } from '../i18n/ui';
 import AsciiPortrait from '../components/AsciiPortrait.astro';
+import ProjectStats from '../components/ProjectStats.astro';
 
 interface Props {
   locale: Locale;
@@ -177,6 +178,11 @@ const range = (start: string, end?: string) => `${formatMonth(start, locale)} â€
         <p class="meta">{kindLabel[lead.kind][locale]}, {formatMonth(lead.start, locale)}</p>
         <h3><a href={projectRoute(lead.slug, locale)}>{lead.name}</a></h3>
         <p>{lead.summary[locale]}</p>
+        {lead.stats && (
+          <div class="lead-stats">
+            <ProjectStats stats={lead.stats} locale={locale} compact />
+          </div>
+        )}
         <ul class="tags">{lead.stack.slice(0, 6).map((s) => <li>{s}</li>)}</ul>
         <a class="btn" href={projectRoute(lead.slug, locale)}>{t.viewProject}<span class="visually-hidden">: {lead.name}</span></a>
       </div>
@@ -422,6 +428,10 @@ const range = (start: string, end?: string) => `${formatMonth(start, locale)} â€
     gap: 2rem 3rem;
     align-items: center;
     margin-top: 3rem;
+  }
+
+  .lead-stats {
+    margin-top: 1.5rem;
   }
 
   .lead-text h3 {

@@ -131,7 +131,21 @@ const copy = {
     font-family: var(--font-mono);
     font-size: 0.72rem;
     color: #94a89d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     pointer-events: none;
+  }
+
+  @media (max-width: 26rem) {
+    .caption {
+      font-size: 0.64rem;
+      gap: 0.4rem;
+      padding-inline: 0.7rem;
+    }
+    .hint::before {
+      margin-right: 0.4rem;
+    }
   }
 
   .file {

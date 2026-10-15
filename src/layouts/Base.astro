@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Terminal from '../components/Terminal.astro';
 import { htmlLang, ui, type Locale } from '../i18n/ui';
 import fontLatin from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-standard-normal.woff2?url';
 
@@ -65,6 +66,7 @@ const t = ui[locale];
       <slot />
     </main>
     <Footer locale={locale} />
+    <Terminal locale={locale} alternate={alternate} />
     <script>
       import '../scripts/theme';
       import '../scripts/reveal';

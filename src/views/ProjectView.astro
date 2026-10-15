@@ -3,6 +3,8 @@ import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import ProjectCover from '../components/ProjectCover.astro';
 import FlowDemo from '../components/FlowDemo.astro';
+import ProjectStats from '../components/ProjectStats.astro';
+import ArchitectureDiagram from '../components/ArchitectureDiagram.astro';
 import { projects, kindLabel, type Project } from '../data/projects';
 import { formatMonth, projectRoute, route, ui, type Locale } from '../i18n/ui';
 
@@ -15,8 +17,8 @@ const { project: p, locale } = Astro.props;
 const t = ui[locale];
 const other: Locale = locale === 'pt' ? 'en' : 'pt';
 const copy = {
-  pt: { stack: 'Stack', when: 'Início', context: 'Contexto', kind: 'Tipo', gallery: 'Telas', crumbs: 'Caminho' },
-  en: { stack: 'Stack', when: 'Started', context: 'Context', kind: 'Type', gallery: 'Screens', crumbs: 'Breadcrumb' },
+  pt: { stack: 'Stack', when: 'Início', context: 'Contexto', kind: 'Tipo', gallery: 'Telas', crumbs: 'Caminho', numbers: 'Em números', arch: 'Arquitetura' },
+  en: { stack: 'Stack', when: 'Started', context: 'Context', kind: 'Type', gallery: 'Screens', crumbs: 'Breadcrumb', numbers: 'By the numbers', arch: 'Architecture' },
 }[locale];
 
 const index = projects.findIndex((x) => x.slug === p.slug);
@@ -66,6 +68,24 @@ const wide = p.gallery.filter((g) => !g.phone);
     <div class:list={['hero-media', { phone: p.cover?.phone }]} data-reveal="clip">
       <ProjectCover project={p} locale={locale} eager sizes="(min-width: 82rem) 80rem, 100vw" />
     </div>
+
+    {
+      p.stats && (
+        <section class="block" aria-labelledby="numeros">
+          <h2 id="numeros" class="block-title">{copy.numbers}</h2>
+          <ProjectStats stats={p.stats} locale={locale} />
+        </section>
+      )
+    }
+
+    {
+      p.diagram && (
+        <section class="block" aria-labelledby="arquitetura">
+          <h2 id="arquitetura" class="block-title">{copy.arch}</h2>
+          <ArchitectureDiagram name={p.diagram} locale={locale} />
+        </section>
+      )
+    }
 
     <div class="body">
       <aside class="side">
@@ -233,6 +253,17 @@ const wide = p.gallery.filter((g) => !g.phone);
   .hero-media.phone :global(.cover-phone) {
     height: min(38rem, 70svh);
     border: 0;
+  }
+
+  .block {
+    margin-top: 4.5rem;
+  }
+
+  .block-title {
+    font-size: var(--step-3);
+    font-stretch: 82%;
+    letter-spacing: -0.015em;
+    margin-bottom: 1.5rem;
   }
 
   .body {

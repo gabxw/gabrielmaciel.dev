@@ -1,0 +1,136 @@
+---
+import type { Stat } from '../data/projects';
+import { formatMonth, type Locale } from '../i18n/ui';
+
+interface Props {
+  stats: { counted: string; items: Stat[] };
+  locale: Locale;
+  /** Versão compacta, para a capa do projeto na home. */
+  compact?: boolean;
+}
+
+const { stats, locale, compact = false } = Astro.props;
+const items = compact ? stats.items.slice(0, 3) : stats.items;
+const fmt = (s: Stat) =>
+  s.value.toLocaleString(locale === 'pt' ? 'pt-BR' : 'en-US', {
+    minimumFractionDigits: s.decimals ?? 0,
+    maximumFractionDigits: s.decimals ?? 0,
+  });
+const note = locale === 'pt' ? `Contado no código em ${formatMonth(stats.counted, locale)}.` : `Counted in the code in ${formatMonth(stats.counted, locale)}.`;
+---
+
+<div class:list={['stats', { compact }]}>
+  <dl class="grid">
+    {
+      items.map((s) => (
+        <div class="stat">
+          <dt>{s.label[locale]}</dt>
+          <dd>
+            <span data-count={s.value} data-decimals={s.decimals ?? 0} data-locale={locale === 'pt' ? 'pt-BR' : 'en-US'}>
+              {fmt(s)}
+            </span>
+            {s.suffix && <span class="suffix">{s.suffix[locale]}</span>}
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+  {!compact && <p class="note">{note}</p>}
+</div>
+
+<script>
+  // Os números contam de zero até o valor quando aparecem na tela.
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const els = document.querySelectorAll<HTMLElement>('[data-count]');
+  if (!reduced && els.length) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          io.unobserve(entry.target);
+          const el = entry.target as HTMLElement;
+          const target = Number(el.dataset.count);
+          const decimals = Number(el.dataset.decimals);
+          const fmt = new Intl.NumberFormat(el.dataset.locale, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+          const start = performance.now();
+          const duration = 1400;
+          const tick = (now: number) => {
+            const t = Math.min(1, (now - start) / duration);
+            const eased = 1 - Math.pow(1 - t, 4);
+            el.textContent = fmt.format(target * eased);
+            if (t < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        });
+      },
+      { threshold: 0.6 },
+    );
+    els.forEach((el) => io.observe(el));
+  }
+</script>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr));
+    margin: 0;
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 0.4rem;
+    padding: 1.1rem 1.1rem 1.2rem;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  dd {
+    margin: 0;
+    font-size: clamp(2rem, 1.4rem + 2.2vw, 3rem);
+    font-weight: 780;
+    font-stretch: 78%;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--signal-text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .suffix {
+    font-size: 0.55em;
+    margin-left: 0.05em;
+  }
+
+  dt {
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+    line-height: 1.4;
+  }
+
+  .note {
+    margin-top: 0.75rem;
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+  }
+
+  .compact .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .compact .stat {
+    padding: 0.8rem 0.8rem 0.9rem;
+  }
+
+  .compact dd {
+    font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.2rem);
+  }
+
+  @media (max-width: 34rem) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

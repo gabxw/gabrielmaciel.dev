@@ -26,6 +26,14 @@ export interface Section {
   items?: T[];
 }
 
+/** Um número contado no código do projeto. */
+export interface Stat {
+  value: number;
+  decimals?: number;
+  suffix?: T;
+  label: T;
+}
+
 export interface Project {
   slug: string;
   name: string;
@@ -44,6 +52,10 @@ export interface Project {
   gallery: Shot[];
   sections: Section[];
   featured: boolean;
+  /** Números contados no repositório, com a data da contagem. */
+  stats?: { counted: string; items: Stat[] };
+  /** Chave do diagrama de arquitetura em src/data/diagrams.ts. */
+  diagram?: 'flowforge' | 'conta-aberta' | 'zapbebidas';
 }
 
 export const kindLabel: Record<ProjectKind, T> = {
@@ -59,6 +71,18 @@ export const projects: Project[] = [
     kind: 'backend',
     live: false,
     featured: true,
+    stats: {
+      counted: '2026-10',
+      items: [
+        { value: 42, label: { pt: 'endpoints HTTP', en: 'HTTP endpoints' } },
+        { value: 361, label: { pt: 'testes em C#, de unidade a integração', en: 'C# tests, unit to integration' } },
+        { value: 38, label: { pt: 'testes de ponta a ponta no navegador', en: 'end-to-end browser tests' } },
+        { value: 18, label: { pt: 'tabelas no PostgreSQL', en: 'PostgreSQL tables' } },
+        { value: 17, label: { pt: 'decisões de arquitetura registradas', en: 'recorded architecture decisions' } },
+        { value: 1.1, decimals: 1, label: { pt: 'linha de teste para cada linha de código', en: 'lines of test per line of code' } },
+      ],
+    },
+    diagram: 'flowforge',
     summary: {
       pt: 'Motor de automação por workflows em .NET, no estilo do n8n, feito para continuar correto quando alguma coisa falha no meio do caminho.',
       en: 'A workflow automation engine in .NET, in the spirit of n8n, built to stay correct when something fails halfway through.',
@@ -168,6 +192,17 @@ export const projects: Project[] = [
     kind: 'fullstack',
     live: false,
     featured: true,
+    stats: {
+      counted: '2026-10',
+      items: [
+        { value: 4, label: { pt: 'dias de hackathon até o primeiro protótipo', en: 'hackathon days to the first prototype' } },
+        { value: 12, label: { pt: 'endpoints na API em .NET', en: '.NET API endpoints' } },
+        { value: 14, label: { pt: 'testes automatizados do motor de cálculo', en: 'automated tests for the calculation engine' } },
+        { value: 7, label: { pt: 'premissas com fonte pública', en: 'assumptions backed by public sources' } },
+        { value: 2, label: { pt: 'provedores de IA: Claude e OpenAI', en: 'AI providers: Claude and OpenAI' } },
+      ],
+    },
+    diagram: 'conta-aberta',
     summary: {
       pt: 'App de carro por assinatura que mostra ao cliente o que a mensalidade cobre. Nasceu no hackathon Ruptura 2026 e continuei depois do evento até virar um app completo.',
       en: 'A car subscription app that shows customers what their monthly fee covers. It started at the Ruptura 2026 hackathon and I kept building it afterwards.',
@@ -226,6 +261,17 @@ export const projects: Project[] = [
     kind: 'fullstack',
     live: true,
     featured: true,
+    stats: {
+      counted: '2026-10',
+      items: [
+        { value: 57, label: { pt: 'endpoints na API', en: 'API endpoints' } },
+        { value: 41, label: { pt: 'tabelas no PostgreSQL', en: 'PostgreSQL tables' } },
+        { value: 339, label: { pt: 'testes automatizados', en: 'automated tests' } },
+        { value: 4, label: { pt: 'workers em segundo plano', en: 'background workers' } },
+        { value: 29, suffix: { pt: ' mil', en: 'k' }, label: { pt: 'linhas de TypeScript', en: 'lines of TypeScript' } },
+      ],
+    },
+    diagram: 'zapbebidas',
     summary: {
       pt: 'SaaS de cardápio digital e pedidos pelo WhatsApp para distribuidoras de bebidas, com mensalidade fixa e sem comissão por pedido.',
       en: 'A SaaS for beverage distributors: digital catalog and WhatsApp ordering, with a flat monthly fee and no per-order commission.',

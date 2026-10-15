@@ -31,6 +31,7 @@ const year = new Date().getFullYear();
       <li><a href={`mailto:${contact.email}`}>E-mail</a></li>
       <li><a href={contact.linkedin} rel="me">LinkedIn</a></li>
       <li><a href={contact.github} rel="me">GitHub</a></li>
+      <li><button class="term-link" type="button" data-open-terminal>{locale === 'pt' ? 'Terminal' : 'Terminal'} <kbd>`</kbd></button></li>
     </ul>
   </div>
   <div class="wrap fine">
@@ -100,6 +101,30 @@ const year = new Date().getFullYear();
     display: inline-block;
     padding-block: 0.3rem;
     text-decoration: none;
+  }
+
+  .term-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .term-link:hover {
+    color: var(--ink);
+  }
+
+  kbd {
+    padding: 0 0.4rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
   }
 
   .links a:hover {

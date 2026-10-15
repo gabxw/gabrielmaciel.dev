@@ -1,0 +1,332 @@
+---
+import { projects } from '../data/projects';
+import { books, statusLabel } from '../data/books';
+import { tools } from '../data/profile';
+import { contact, projectRoute, route, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  alternate: string;
+}
+
+const { locale, alternate } = Astro.props;
+
+// Só o que o terminal precisa, em texto, para não pesar a página.
+const data = {
+  locale,
+  alternate,
+  routes: { home: route('home', locale), projects: route('projects', locale), books: route('books', locale) },
+  contact,
+  projects: projects.map((p) => ({
+    slug: p.slug,
+    name: p.name,
+    summary: p.summary[locale],
+    live: p.live,
+    url: projectRoute(p.slug, locale),
+    stack: p.stack.slice(0, 4),
+  })),
+  books: books.map((b) => ({ title: b.title[locale], author: b.author, status: statusLabel[b.status][locale], reading: b.status === 'reading' })),
+  daily: ['C#', '.NET', 'Laravel', 'PHP', 'PostgreSQL', 'Tailwind', 'Git', 'Docker'],
+  tools: tools.map((t) => t.name),
+};
+
+const copy = {
+  pt: { title: 'gabriel@maciel: ~', close: 'Fechar terminal', input: 'Comando', hint: 'Digite help e aperte Enter' },
+  en: { title: 'gabriel@maciel: ~', close: 'Close terminal', input: 'Command', hint: 'Type help and press Enter' },
+}[locale];
+const chips = locale === 'pt' ? ['help', 'neofetch', 'projetos', 'livros', 'contato'] : ['help', 'neofetch', 'projects', 'books', 'contact'];
+---
+
+<dialog class="term" data-term aria-labelledby="term-title">
+  <div class="term-bar">
+    <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    <p id="term-title" class="term-title">{copy.title}</p>
+    <button class="term-close" type="button" data-term-close>
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+      <span class="visually-hidden">{copy.close}</span>
+    </button>
+  </div>
+  <div class="term-out" data-term-out role="log" aria-live="polite"></div>
+  <form class="term-in" data-term-form autocomplete="off">
+    <label class="prompt" for="term-input"><span aria-hidden="true">gabriel@maciel:~$</span><span class="visually-hidden">{copy.input}</span></label>
+    <input id="term-input" data-term-input type="text" spellcheck="false" autocapitalize="off" enterkeyhint="send" placeholder={copy.hint} />
+  </form>
+  <div class="chips" aria-label={locale === 'pt' ? 'Comandos rápidos' : 'Quick commands'}>
+    {chips.map((c) => <button type="button" data-term-chip={c}>{c}</button>)}
+  </div>
+  <script is:inline type="application/json" data-term-data set:html={JSON.stringify(data)} />
+</dialog>
+
+<script>
+  // Abre com ` ou Ctrl+K em qualquer lugar, e pelos botões marcados com data-open-terminal.
+  const dialog = document.querySelector<HTMLDialogElement>('[data-term]');
+  let loaded: Promise<{ open: () => void }> | null = null;
+
+  function open() {
+    if (!dialog) return;
+    loaded ??= import('../scripts/terminal').then(({ mountTerminal }) => mountTerminal(dialog));
+    loaded.then((t) => t.open());
+  }
+
+  document.addEventListener('keydown', (e) => {
+    const target = e.target as HTMLElement;
+    const typing = target.closest('input, textarea, select, [contenteditable="true"]');
+    const shortcut = (e.key === 'k' || e.key === 'K') && (e.ctrlKey || e.metaKey);
+    if (shortcut || (!typing && (e.key === '`' || e.code === 'Backquote'))) {
+      if (dialog?.open) return;
+      e.preventDefault();
+      open();
+    }
+  });
+
+  document.querySelectorAll('[data-open-terminal]').forEach((el) =>
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      open();
+    }),
+  );
+</script>
+
+<style>
+  /* O terminal é escuro nos dois temas. */
+  .term {
+    width: min(46rem, calc(100vw - 2rem));
+    max-height: min(34rem, calc(100dvh - 2rem));
+    padding: 0;
+    border: 1px solid color-mix(in oklab, #4ade80 40%, transparent);
+    border-radius: 14px;
+    background: #050a08;
+    color: #d6e4db;
+    box-shadow: 0 40px 80px -20px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(0 0 0 / 0.4);
+    overflow: hidden;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    opacity: 0;
+    translate: 0 12px;
+    scale: 0.98;
+    transition:
+      opacity 0.22s,
+      translate 0.28s var(--ease-out),
+      scale 0.28s var(--ease-out),
+      display 0.28s allow-discrete,
+      overlay 0.28s allow-discrete;
+  }
+
+  .term[open] {
+    display: flex;
+    flex-direction: column;
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+
+  @starting-style {
+    .term[open] {
+      opacity: 0;
+      translate: 0 12px;
+      scale: 0.98;
+    }
+  }
+
+  .term::backdrop {
+    background: rgb(2 6 4 / 0.55);
+    backdrop-filter: blur(3px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .term {
+      transition: none;
+    }
+  }
+
+  .term-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.35rem 0.4rem 0.35rem 0.9rem;
+    border-bottom: 1px solid #16261e;
+    background: #08110d;
+  }
+
+  .dots {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .dots i {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    background: #22332b;
+  }
+
+  .dots i:first-child {
+    background: #4ade80;
+  }
+
+  .term-title {
+    flex: 1;
+    color: #94a89d;
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  .term-close {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #94a89d;
+    cursor: pointer;
+  }
+
+  .term-close:hover {
+    color: #fff;
+    background: #16261e;
+  }
+
+  .term-close svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .term-out {
+    flex: 1;
+    min-height: 12rem;
+    padding: 0.9rem 1rem 0.4rem;
+    overflow-y: auto;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .term-out :global(.l-cmd) {
+    color: #fff;
+  }
+
+  .term-out :global(.l-cmd span) {
+    color: #4ade80;
+  }
+
+  .term-out :global(.l-ok) {
+    color: #4ade80;
+  }
+
+  .term-out :global(.l-dim) {
+    color: #7c9387;
+  }
+
+  .term-out :global(.l-err) {
+    color: #fbbf24;
+  }
+
+  .term-out :global(a) {
+    color: #bbf7d0;
+  }
+
+  .term-out :global(.neo) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0 1.5rem;
+    margin: 0.4rem 0 0.6rem;
+  }
+
+  .term-out :global(.neo-art) {
+    color: #4ade80;
+    line-height: 1.15;
+  }
+
+  .term-out :global(.neo-info b) {
+    color: #4ade80;
+    font-weight: 500;
+  }
+
+  .term-out :global(.swatches) {
+    display: flex;
+    gap: 0.25rem;
+    margin-top: 0.4rem;
+  }
+
+  .term-out :global(.swatches i) {
+    width: 1.4rem;
+    height: 0.8rem;
+  }
+
+  .term-in {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem 0.6rem;
+  }
+
+  .prompt {
+    color: #4ade80;
+    white-space: nowrap;
+  }
+
+  .term-in input {
+    flex: 1;
+    min-width: 0;
+    min-height: 2.25rem;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font: inherit;
+    caret-color: #4ade80;
+    outline: none;
+  }
+
+  .term-in input::placeholder {
+    color: #4a5e53;
+  }
+
+  .term-in:focus-within {
+    background: #08110d;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    padding: 0.5rem 1rem 0.8rem;
+    border-top: 1px solid #16261e;
+  }
+
+  .chips button {
+    min-height: 2.25rem;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid #22332b;
+    border-radius: 999px;
+    background: transparent;
+    color: #94a89d;
+    font: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+  }
+
+  .chips button:hover {
+    color: #4ade80;
+    border-color: #4ade80;
+  }
+
+  @media (max-width: 40rem) {
+    .term {
+      width: calc(100vw - 1rem);
+      max-height: calc(100dvh - 1rem);
+      font-size: 0.76rem;
+    }
+    .prompt span:first-child {
+      font-size: 0;
+    }
+    .prompt span:first-child::before {
+      content: '$';
+      font-size: 0.76rem;
+    }
+    .term-out :global(.neo) {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

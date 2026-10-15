@@ -6,9 +6,10 @@ Portfólio pessoal do Gabriel Maciel. Site estático feito com Astro, three.js, 
 
 - **Início**: fundo de partículas em WebGL com shader próprio (`src/scripts/world.ts`). No topo as partículas formam um globo só com os continentes, com Belo Horizonte marcada e arcos saindo dela; ao rolar, viram um terreno em onda e depois uma galáxia em espiral. O globo gira ao arrastar e as partículas desviam do ponteiro. Os pontos dos continentes saem de `scripts/gerar-globo.mjs`.
 - **Cabeçalho** flutuante com o horário de Belo Horizonte ao vivo.
+- **Terminal escondido**: a tecla ` ou Ctrl+K abre um terminal com `help`, `neofetch`, `projetos`, `livros`, `contato`, `tema`, `idioma` e outros (`src/scripts/terminal.ts`). No celular abre pelo link do rodapé.
 - **Sobre, trajetória, projetos em destaque e contato.**
 - **Ferramentas**: blocos 3D com física (cannon-es) que caem e podem ser arremessados.
-- **Projetos** (`/projetos/`, `/en/projects/`): lista com filtro e uma página por projeto. A página do FlowForge tem a demo 3D do caminho de um evento (webhook, outbox, fila, worker).
+- **Projetos** (`/projetos/`, `/en/projects/`): lista com filtro e uma página por projeto. FlowForge, Conta Aberta e ZapBebidas têm "Em números" (contado nos repositórios, `stats` em `src/data/projects.ts`) e diagrama de arquitetura (`src/data/diagrams.ts`). A página do FlowForge tem a demo 3D do caminho de um evento.
 - **Livros** (`/livros/`, `/en/books/`): lista com filtro por situação.
 
 ## Onde mexer no conteúdo
