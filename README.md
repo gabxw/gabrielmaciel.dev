@@ -4,10 +4,11 @@ Portfólio pessoal do Gabriel Maciel. Site estático feito com Astro, three.js, 
 
 ## O que tem
 
-- **Início**: hero com um grafo 3D do caminho de um evento no FlowForge (webhook, API, outbox, RabbitMQ, worker, destino). Dá para mandar eventos, mandar duplicado e derrubar a fila.
+- **Início**: fundo de partículas em WebGL com shader próprio (`src/scripts/world.ts`). No topo as partículas formam um globo só com os continentes, com Belo Horizonte marcada e arcos saindo dela; ao rolar, viram um terreno em onda e depois uma galáxia em espiral. O globo gira ao arrastar e as partículas desviam do ponteiro. Os pontos dos continentes saem de `scripts/gerar-globo.mjs`.
+- **Cabeçalho** flutuante com o horário de Belo Horizonte ao vivo.
 - **Sobre, trajetória, projetos em destaque e contato.**
 - **Ferramentas**: blocos 3D com física (cannon-es) que caem e podem ser arremessados.
-- **Projetos** (`/projetos/`, `/en/projects/`): lista com filtro e uma página por projeto.
+- **Projetos** (`/projetos/`, `/en/projects/`): lista com filtro e uma página por projeto. A página do FlowForge tem a demo 3D do caminho de um evento (webhook, outbox, fila, worker).
 - **Livros** (`/livros/`, `/en/books/`): lista com filtro por situação.
 
 ## Onde mexer no conteúdo

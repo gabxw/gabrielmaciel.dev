@@ -10,78 +10,34 @@ const t = ui[locale];
 
 const copy = {
   pt: {
-    lede: 'Desenvolvedor backend em Belo Horizonte. Construo sistemas que continuam funcionando quando alguma coisa no caminho falha.',
-    now: 'Hoje no Grupo Roma Brasil, com C#/.NET, Laravel e Python.',
-    demoTitle: 'Mande um evento pelo sistema',
-    demoText: 'Este é o caminho que um evento faz no FlowForge, o motor de workflows que eu construí. Derrube a fila para ver os eventos esperando na outbox, ou mande o mesmo evento duas vezes.',
-    send: 'Enviar evento',
-    duplicate: 'Enviar duplicado',
-    queueOff: 'Derrubar a fila',
-    queueOn: 'Religar a fila',
-    pauseOff: 'Pausar eventos automáticos',
-    pauseOn: 'Retomar eventos automáticos',
-    hint: 'Arraste para girar. Clique no Webhook para mandar um evento.',
-    hintTouch: 'Toque nos botões para mandar eventos e derrubar a fila.',
-    logTitle: 'Registro',
-    canvasLabel: 'Grafo 3D com seis etapas: Webhook, API, Outbox, RabbitMQ, Worker e Destino.',
-    nodes: [
-      { id: 'webhook', name: 'Webhook', role: 'o evento chega' },
-      { id: 'api', name: 'API', role: 'grava execução e outbox juntas' },
-      { id: 'outbox', name: 'Outbox', role: 'PostgreSQL guarda a mensagem' },
-      { id: 'queue', name: 'RabbitMQ', role: 'fila de execução' },
-      { id: 'worker', name: 'Worker', role: 'executa com checkpoints' },
-      { id: 'target', name: 'Destino', role: 'a chamada externa' },
-    ],
-    log: {
-      received: '{key} chegou pelo webhook',
-      created: '{key} virou a execução {exe}',
-      dedup: '{key} repetido: mesma chave, mesma execução. Nada roda duas vezes.',
-      held: 'fila fora do ar: {key} esperando na outbox ({n})',
-      down: 'RabbitMQ fora do ar. A API continua aceitando eventos.',
-      up: 'fila de volta: {n} eventos publicados da outbox',
-      done: '{exe} concluída em {ms} ms',
-    },
+    lede: 'Desenvolvedor de software em Belo Horizonte. Construo sistemas, APIs, integrações e automações, com foco em backend.',
+    now: 'Hoje no Grupo Roma Brasil, com C#, PHP, Laravel, Python e PostgreSQL.',
+    drag: 'Arraste o globo para girar',
+    scroll: 'Role para continuar',
+    coords: '19,92° S, 43,94° O',
+    canvasLabel: 'Globo 3D feito de partículas, com Belo Horizonte marcada e arcos saindo dela para outras cidades do mundo.',
   },
   en: {
-    lede: 'Backend developer in Belo Horizonte, Brazil. I build systems that keep working when something along the way fails.',
-    now: 'Currently at Grupo Roma Brasil, with C#/.NET, Laravel and Python.',
-    demoTitle: 'Send an event through the system',
-    demoText: 'This is the path an event takes inside FlowForge, the workflow engine I built. Take the queue down to see events waiting in the outbox, or send the same event twice.',
-    send: 'Send event',
-    duplicate: 'Send duplicate',
-    queueOff: 'Take the queue down',
-    queueOn: 'Bring the queue back',
-    pauseOff: 'Pause automatic events',
-    pauseOn: 'Resume automatic events',
-    hint: 'Drag to rotate. Click the Webhook to send an event.',
-    hintTouch: 'Tap the buttons to send events and take the queue down.',
-    logTitle: 'Log',
-    canvasLabel: '3D graph with six steps: Webhook, API, Outbox, RabbitMQ, Worker and Target.',
-    nodes: [
-      { id: 'webhook', name: 'Webhook', role: 'the event arrives' },
-      { id: 'api', name: 'API', role: 'saves execution and outbox together' },
-      { id: 'outbox', name: 'Outbox', role: 'PostgreSQL keeps the message' },
-      { id: 'queue', name: 'RabbitMQ', role: 'execution queue' },
-      { id: 'worker', name: 'Worker', role: 'runs with checkpoints' },
-      { id: 'target', name: 'Target', role: 'the external call' },
-    ],
-    log: {
-      received: '{key} arrived through the webhook',
-      created: '{key} became execution {exe}',
-      dedup: '{key} repeated: same key, same execution. Nothing runs twice.',
-      held: 'queue down: {key} waiting in the outbox ({n})',
-      down: 'RabbitMQ is down. The API keeps accepting events.',
-      up: 'queue is back: {n} events published from the outbox',
-      done: '{exe} completed in {ms} ms',
-    },
+    lede: 'Software developer in Belo Horizonte, Brazil. I build systems, APIs, integrations and automations, with a focus on backend.',
+    now: 'Currently at Grupo Roma Brasil, with C#, PHP, Laravel, Python and PostgreSQL.',
+    drag: 'Drag the globe to spin it',
+    scroll: 'Scroll to continue',
+    coords: '19.92° S, 43.94° W',
+    canvasLabel: '3D globe made of particles, with Belo Horizonte marked and arcs leaving it toward other cities around the world.',
   },
 }[locale];
-
-const graphCopy = JSON.stringify({ nodes: copy.nodes, log: copy.log });
 ---
 
-<section class="hero" aria-labelledby="hero-title">
-  <div class="wrap hero-head">
+<section class="hero" data-hero aria-labelledby="hero-title">
+  <canvas class="world" data-world aria-hidden="true"></canvas>
+  <p class="visually-hidden">{copy.canvasLabel}</p>
+
+  <div class="bh-label" data-bh-label aria-hidden="true">
+    <strong>Belo Horizonte</strong>
+    <span>{copy.coords}</span>
+  </div>
+
+  <div class="wrap hero-inner">
     <h1 id="hero-title" class="hero-title" data-hero-title>
       <span>Gabriel</span>
       <span>Maciel</span>
@@ -96,58 +52,12 @@ const graphCopy = JSON.stringify({ nodes: copy.nodes, log: copy.log });
     </div>
   </div>
 
-  <div class="stage" data-hero-stage data-graph={graphCopy}>
-    <canvas aria-hidden="true"></canvas>
-    <div class="labels" data-labels aria-hidden="true"></div>
-    <p class="visually-hidden">{copy.canvasLabel}</p>
-
-    <!-- Versão estática, para quando o WebGL não está disponível. -->
-    <svg class="fallback" viewBox="0 0 1200 260" aria-hidden="true">
-      <g class="fb-lines">
-        <path d="M110 110 C 220 110, 230 160, 330 160 S 440 100, 530 100 S 650 165, 730 165 S 850 100, 930 100 S 1050 160, 1110 160"></path>
-      </g>
-      {
-        copy.nodes.map((n, i) => {
-          const x = 110 + i * 200;
-          const y = i % 2 === 0 ? 105 : 160;
-          return (
-            <g class="fb-node" transform={`translate(${x} ${y})`}>
-              <rect x="-62" y="-30" width="124" height="60" rx="14"></rect>
-              <circle cx="44" cy="-14" r="5"></circle>
-              <text y="56" text-anchor="middle">{n.name}</text>
-            </g>
-          );
-        })
-      }
-    </svg>
-  </div>
-
-  <div class="wrap demo" data-hero-fade>
-    <div class="demo-copy">
-      <h2 class="demo-title">{copy.demoTitle}</h2>
-      <p>{copy.demoText}</p>
-      <p class="hint"><span class="hint-fine">{copy.hint}</span><span class="hint-touch">{copy.hintTouch}</span></p>
-    </div>
-    <div class="demo-controls">
-      <div class="buttons" role="group" aria-label={copy.demoTitle}>
-        <button class="btn btn-primary" type="button" data-action="send">{copy.send}</button>
-        <button class="btn" type="button" data-action="duplicate">{copy.duplicate}</button>
-        <button class="btn" type="button" data-action="queue" data-active="false" data-off={copy.queueOff} data-on={copy.queueOn}>
-          <span class="switch" aria-hidden="true"></span>
-          <span data-label>{copy.queueOff}</span>
-        </button>
-      </div>
-      <div class="log">
-        <div class="log-head">
-          <p class="log-title">{copy.logTitle}</p>
-          <button class="link-btn" type="button" data-action="pause" data-active="false" data-off={copy.pauseOff} data-on={copy.pauseOn}>
-            <span data-label>{copy.pauseOff}</span>
-          </button>
-        </div>
-        <ol data-log aria-hidden="true"></ol>
-        <p class="visually-hidden" role="status" data-status></p>
-      </div>
-    </div>
+  <div class="wrap hero-foot" data-hero-fade>
+    <p class="drag-hint" data-drag-hint hidden>{copy.drag}</p>
+    <a class="scroll-cue" href="#about-title">
+      <span>{copy.scroll}</span>
+      <span class="cue-line" aria-hidden="true"></span>
+    </a>
   </div>
 </section>
 
@@ -155,54 +65,129 @@ const graphCopy = JSON.stringify({ nodes: copy.nodes, log: copy.log });
   import { gsap } from 'gsap';
   import { SplitText } from 'gsap/SplitText';
 
-  const stage = document.querySelector<HTMLElement>('[data-hero-stage]')!;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-world]')!;
+  const hero = document.querySelector<HTMLElement>('[data-hero]')!;
 
   function hasWebGL() {
     try {
-      const c = document.createElement('canvas');
-      return !!(c.getContext('webgl2') || c.getContext('webgl'));
+      return !!document.createElement('canvas').getContext('webgl2');
     } catch {
       return false;
     }
   }
 
-  // Abertura: o nome sobe letra por letra, o resto aparece logo depois.
+  // Abertura: o nome sobe letra por letra enquanto as partículas formam o globo.
   if (!reduced) {
     gsap.registerPlugin(SplitText);
     const title = document.querySelector<HTMLElement>('[data-hero-title]')!;
     const split = SplitText.create(title, { type: 'chars', mask: 'chars' });
-    gsap.from(split.chars, { yPercent: 115, duration: 1.1, ease: 'expo.out', stagger: 0.035, delay: 0.05 });
-    gsap.from('[data-hero-fade]', { opacity: 0, y: 18, duration: 0.9, ease: 'power3.out', stagger: 0.15, delay: 0.45 });
+    gsap.from(split.chars, { yPercent: 115, duration: 1.2, ease: 'expo.out', stagger: 0.04, delay: 0.1 });
+    gsap.from('[data-hero-fade]', { opacity: 0, y: 18, duration: 1, ease: 'power3.out', stagger: 0.18, delay: 0.6 });
   }
 
   if (hasWebGL()) {
-    const copy = JSON.parse(stage.dataset.graph!);
     const start = () =>
-      import('../scripts/hero-graph').then(({ mountHeroGraph }) => mountHeroGraph(stage, copy));
-    if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 600 });
-    else setTimeout(start, 200);
+      import('../scripts/world').then(({ mountWorld }) => {
+        mountWorld({ canvas, hero, label: document.querySelector<HTMLElement>('[data-bh-label]') });
+        if (matchMedia('(pointer: fine)').matches) document.querySelector<HTMLElement>('[data-drag-hint]')!.hidden = false;
+      });
+    if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 500 });
+    else setTimeout(start, 150);
   } else {
-    stage.classList.add('no-webgl');
-    document.querySelectorAll<HTMLButtonElement>('[data-action]').forEach((b) => (b.disabled = true));
+    canvas.remove();
   }
 </script>
 
 <style>
   .hero {
-    padding-top: clamp(1.25rem, 0.5rem + 2.5vw, 3rem);
+    position: relative;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    min-height: calc(100svh - 5rem);
+    padding-top: clamp(1.5rem, 1rem + 3vw, 4rem);
+    touch-action: pan-y;
   }
 
-  .hero-head {
+  @media (pointer: fine) {
+    .hero {
+      cursor: grab;
+    }
+    .hero:global(.is-dragging) {
+      cursor: grabbing;
+    }
+    .hero a,
+    .hero button {
+      cursor: pointer;
+    }
+  }
+
+  /* O canvas fica fixo atrás da página inteira; as formas mudam com a rolagem. */
+  .world {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1.2s;
+  }
+
+  .world:global(.is-live) {
+    opacity: 1;
+  }
+
+  /* Sem animação: o globo fica parado só no topo. */
+  @media (prefers-reduced-motion: reduce) {
+    .world {
+      position: absolute;
+      height: 100%;
+    }
+  }
+
+  .bh-label {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1;
     display: grid;
-    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-    align-items: end;
-    gap: 1.5rem 3rem;
+    gap: 0.1rem;
+    margin-left: 1rem;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: color-mix(in oklab, var(--bg) 78%, transparent);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s;
+    white-space: nowrap;
+  }
+
+  .bh-label strong {
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .bh-label span {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--ink-soft);
+  }
+
+  .hero-inner {
+    display: grid;
+    align-content: center;
+    gap: 2rem;
+    padding-block: 2rem 4rem;
   }
 
   .hero-title {
     /* Em tela baixa (celular deitado) o nome não pode ocupar a tela inteira. */
-    font-size: min(var(--step-display), 22svh);
+    font-size: min(var(--step-display), 24svh);
     font-stretch: 75%;
     font-weight: 780;
     letter-spacing: -0.035em;
@@ -218,7 +203,7 @@ const graphCopy = JSON.stringify({ nodes: copy.nodes, log: copy.log });
   }
 
   .hero-intro {
-    padding-bottom: 0.6rem;
+    max-width: 30rem;
   }
 
   .now {
@@ -233,278 +218,83 @@ const graphCopy = JSON.stringify({ nodes: copy.nodes, log: copy.log });
     margin-top: 1.5rem;
   }
 
-  .stage {
+  .hero-foot {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+  }
+
+  .drag-hint {
+    margin-left: auto;
+    order: 2;
+  }
+
+  .scroll-cue {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 2.75rem;
+    text-decoration: none;
+  }
+
+  .scroll-cue:hover {
+    color: var(--ink);
+  }
+
+  .cue-line {
     position: relative;
-    height: clamp(18rem, 44svh, 32rem);
-    margin-top: clamp(0.5rem, 2vw, 1.5rem);
-    touch-action: pan-y;
-  }
-
-  .stage canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: opacity 0.6s;
-  }
-
-  .stage:global(.is-live) canvas {
-    opacity: 1;
-  }
-
-  .stage:global(.is-live) .fallback {
-    display: none;
-  }
-
-  .labels {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
+    width: 3.5rem;
+    height: 1px;
+    background: var(--line-strong);
     overflow: hidden;
   }
 
-  .labels :global(.node-label) {
-    position: absolute;
-    left: 0;
-    top: 0;
-    display: grid;
-    justify-items: center;
-    gap: 0.05rem;
-    text-align: center;
-    white-space: nowrap;
-    will-change: transform;
-  }
-
-  .labels :global(.node-label strong) {
-    font-size: 0.95rem;
-    font-weight: 700;
-  }
-
-  .labels :global(.node-label span) {
-    font-size: 0.78rem;
-    color: var(--ink-soft);
-    opacity: 0;
-    translate: 0 -4px;
-    transition: opacity 0.2s, translate 0.2s;
-  }
-
-  .labels :global(.node-label.is-hover span) {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  .labels :global(.node-label.is-down strong) {
-    color: var(--warn);
-  }
-
-  .fallback {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    padding-inline: var(--gutter);
-  }
-
-  .fb-lines path {
-    fill: none;
-    stroke: var(--line-strong);
-    stroke-width: 2;
-  }
-
-  .fb-node rect {
-    fill: var(--bg-raised);
-    stroke: var(--line-strong);
-  }
-
-  .fb-node circle {
-    fill: var(--signal);
-  }
-
-  .fb-node text {
-    fill: var(--ink);
-    font: 600 16px var(--font-sans);
-  }
-
-  .demo {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
-    gap: 2rem 3rem;
-    margin-top: 1.5rem;
-    padding-top: 1.75rem;
-    border-top: 1px solid var(--line);
-  }
-
-  .demo-title {
-    font-size: var(--step-2);
-    font-stretch: 85%;
-    letter-spacing: -0.01em;
-    margin-bottom: 0.6rem;
-  }
-
-  .demo-copy p {
-    color: var(--ink-soft);
-    max-width: 52ch;
-  }
-
-  .hint {
-    margin-top: 0.75rem;
-    font-size: var(--step--1);
-  }
-
-  .hint-touch {
-    display: none;
-  }
-
-  @media (pointer: coarse) {
-    .hint-fine {
-      display: none;
-    }
-    .hint-touch {
-      display: inline;
-    }
-  }
-
-  .buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .btn[data-active='true'][data-action='queue'] {
-    border-color: var(--warn);
-    color: var(--warn);
-  }
-
-  .switch {
-    width: 1.9rem;
-    height: 1.1rem;
-    border-radius: 999px;
-    background: var(--signal);
-    position: relative;
-    transition: background-color 0.2s;
-  }
-
-  .switch::after {
+  .cue-line::after {
     content: '';
     position: absolute;
-    top: 0.15rem;
-    left: 0.95rem;
-    width: 0.8rem;
-    height: 0.8rem;
-    border-radius: 50%;
-    background: var(--signal-ink);
-    transition: left 0.2s var(--ease-out);
+    inset: 0;
+    background: var(--signal);
+    translate: -100% 0;
+    animation: cue 2.2s var(--ease-out) infinite;
   }
 
-  [data-active='true'] .switch {
-    background: var(--warn);
-  }
-
-  [data-active='true'] .switch::after {
-    left: 0.15rem;
-  }
-
-  .btn:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-  }
-
-  .log {
-    margin-top: 1.1rem;
-    padding: 0.9rem 1rem;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: var(--bg-raised);
-    min-height: 10.5rem;
-  }
-
-  .log-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 0.4rem;
-  }
-
-  .log-title {
-    font-size: var(--step--1);
-    color: var(--ink-soft);
-  }
-
-  .link-btn {
-    min-height: 2.75rem;
-    padding: 0 0.25rem;
-    border: 0;
-    background: none;
-    color: var(--ink-soft);
-    font-size: var(--step--1);
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-    cursor: pointer;
-  }
-
-  .link-btn:hover {
-    color: var(--ink);
-  }
-
-  .log ol {
-    display: grid;
-    gap: 0.3rem;
-    padding: 0;
-    list-style: none;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    line-height: 1.5;
-  }
-
-  .log :global(li) {
-    color: var(--ink-soft);
-    animation: log-in 0.35s var(--ease-out) both;
-  }
-
-  .log :global(li:first-child) {
-    color: var(--ink);
-  }
-
-  .log :global(li[data-kind='dedup']),
-  .log :global(li[data-kind='held']),
-  .log :global(li[data-kind='down']) {
-    color: var(--warn);
-  }
-
-  .log :global(li[data-kind='done']),
-  .log :global(li[data-kind='up']) {
-    color: var(--signal-text);
-  }
-
-  @keyframes log-in {
-    from {
-      opacity: 0;
-      translate: 0 -6px;
+  @keyframes cue {
+    60%,
+    100% {
+      translate: 100% 0;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .log :global(li) {
+    .cue-line::after {
       animation: none;
+      translate: 0 0;
     }
   }
 
   @media (max-width: 56rem) {
-    .hero-head,
-    .demo {
-      grid-template-columns: 1fr;
+    .hero {
+      min-height: calc(100svh - 4rem);
     }
-    .stage {
-      height: min(36rem, 74svh);
+    .hero-inner {
+      align-content: start;
+      padding-top: 0.5rem;
     }
-  }
-
-  /* Tablet em pé e celular deitado: o grafo fica na horizontal, então a área não precisa ser alta. */
-  @media (min-width: 34rem) and (max-width: 56rem) {
-    .stage {
-      height: min(clamp(16rem, 48vw, 28rem), 85svh);
+    .hero-intro {
+      /* Fundo levemente opaco para o texto ficar legível sobre o globo. */
+      padding: 1rem;
+      margin-inline: -1rem;
+      border-radius: var(--radius);
+      background: color-mix(in oklab, var(--bg) 70%, transparent);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .bh-label span {
+      display: none;
     }
   }
 </style>

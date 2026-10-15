@@ -22,7 +22,7 @@ const copy = {
   },
 }[locale];
 
-const daily = ['C#', '.NET', 'Laravel', 'Python', 'PostgreSQL'];
+const daily = ['C#', '.NET', 'Laravel', 'PHP', 'PostgreSQL', 'Tailwind', 'Git', 'Docker'];
 const groups = Object.entries(toolGroups).map(([key, label]) => ({
   label: label[locale],
   items: tools.filter((tool) => tool.group === key).map((tool) => tool.name),

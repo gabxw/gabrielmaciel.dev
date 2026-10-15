@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import ProjectCover from '../components/ProjectCover.astro';
+import FlowDemo from '../components/FlowDemo.astro';
 import { projects, kindLabel, type Project } from '../data/projects';
 import { formatMonth, projectRoute, route, ui, type Locale } from '../i18n/ui';
 
@@ -92,6 +93,12 @@ const wide = p.gallery.filter((g) => !g.phone);
         }
       </div>
     </div>
+
+    {p.slug === 'flowforge' && (
+      <div class="demo-block">
+        <FlowDemo locale={locale} />
+      </div>
+    )}
 
     {
       p.gallery.length > 0 && (
@@ -281,6 +288,12 @@ const wide = p.gallery.filter((g) => !g.phone);
 
   .sections li::marker {
     color: var(--signal-text);
+  }
+
+  .demo-block {
+    margin-top: var(--section);
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--line);
   }
 
   .gallery {

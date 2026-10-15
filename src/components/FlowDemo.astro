@@ -1,0 +1,438 @@
+---
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const copy = {
+  pt: {
+    demoTitle: 'Teste o FlowForge aqui mesmo',
+    demoText: 'Este é o caminho que um evento faz dentro do FlowForge. Derrube a fila para ver os eventos esperando na outbox, ou mande o mesmo evento duas vezes.',
+    send: 'Enviar evento',
+    duplicate: 'Enviar duplicado',
+    queueOff: 'Derrubar a fila',
+    queueOn: 'Religar a fila',
+    pauseOff: 'Pausar eventos automáticos',
+    pauseOn: 'Retomar eventos automáticos',
+    hint: 'Arraste para girar. Clique no Webhook para mandar um evento.',
+    hintTouch: 'Toque nos botões para mandar eventos e derrubar a fila.',
+    logTitle: 'Registro',
+    canvasLabel: 'Grafo 3D com seis etapas: Webhook, API, Outbox, RabbitMQ, Worker e Destino.',
+    nodes: [
+      { id: 'webhook', name: 'Webhook', role: 'o evento chega' },
+      { id: 'api', name: 'API', role: 'grava execução e outbox juntas' },
+      { id: 'outbox', name: 'Outbox', role: 'PostgreSQL guarda a mensagem' },
+      { id: 'queue', name: 'RabbitMQ', role: 'fila de execução' },
+      { id: 'worker', name: 'Worker', role: 'executa com checkpoints' },
+      { id: 'target', name: 'Destino', role: 'a chamada externa' },
+    ],
+    log: {
+      received: '{key} chegou pelo webhook',
+      created: '{key} virou a execução {exe}',
+      dedup: '{key} repetido: mesma chave, mesma execução. Nada roda duas vezes.',
+      held: 'fila fora do ar: {key} esperando na outbox ({n})',
+      down: 'RabbitMQ fora do ar. A API continua aceitando eventos.',
+      up: 'fila de volta: {n} eventos publicados da outbox',
+      done: '{exe} concluída em {ms} ms',
+    },
+  },
+  en: {
+    demoTitle: 'Try FlowForge right here',
+    demoText: 'This is the path an event takes inside FlowForge. Take the queue down to see events waiting in the outbox, or send the same event twice.',
+    send: 'Send event',
+    duplicate: 'Send duplicate',
+    queueOff: 'Take the queue down',
+    queueOn: 'Bring the queue back',
+    pauseOff: 'Pause automatic events',
+    pauseOn: 'Resume automatic events',
+    hint: 'Drag to rotate. Click the Webhook to send an event.',
+    hintTouch: 'Tap the buttons to send events and take the queue down.',
+    logTitle: 'Log',
+    canvasLabel: '3D graph with six steps: Webhook, API, Outbox, RabbitMQ, Worker and Target.',
+    nodes: [
+      { id: 'webhook', name: 'Webhook', role: 'the event arrives' },
+      { id: 'api', name: 'API', role: 'saves execution and outbox together' },
+      { id: 'outbox', name: 'Outbox', role: 'PostgreSQL keeps the message' },
+      { id: 'queue', name: 'RabbitMQ', role: 'execution queue' },
+      { id: 'worker', name: 'Worker', role: 'runs with checkpoints' },
+      { id: 'target', name: 'Target', role: 'the external call' },
+    ],
+    log: {
+      received: '{key} arrived through the webhook',
+      created: '{key} became execution {exe}',
+      dedup: '{key} repeated: same key, same execution. Nothing runs twice.',
+      held: 'queue down: {key} waiting in the outbox ({n})',
+      down: 'RabbitMQ is down. The API keeps accepting events.',
+      up: 'queue is back: {n} events published from the outbox',
+      done: '{exe} completed in {ms} ms',
+    },
+  },
+}[locale];
+
+const graphCopy = JSON.stringify({ nodes: copy.nodes, log: copy.log });
+---
+
+<section class="flow-demo" aria-labelledby="flow-demo-title">
+  <div class="demo-copy">
+      <h2 id="flow-demo-title" class="demo-title">{copy.demoTitle}</h2>
+      <p>{copy.demoText}</p>
+      <p class="hint"><span class="hint-fine">{copy.hint}</span><span class="hint-touch">{copy.hintTouch}</span></p>
+  </div>
+
+  <div class="stage" data-hero-stage data-graph={graphCopy}>
+    <canvas aria-hidden="true"></canvas>
+    <div class="labels" data-labels aria-hidden="true"></div>
+    <p class="visually-hidden">{copy.canvasLabel}</p>
+
+    <!-- Versão estática, para quando o WebGL não está disponível. -->
+    <svg class="fallback" viewBox="0 0 1200 260" aria-hidden="true">
+      <g class="fb-lines">
+        <path d="M110 110 C 220 110, 230 160, 330 160 S 440 100, 530 100 S 650 165, 730 165 S 850 100, 930 100 S 1050 160, 1110 160"></path>
+      </g>
+      {
+        copy.nodes.map((n, i) => {
+          const x = 110 + i * 200;
+          const y = i % 2 === 0 ? 105 : 160;
+          return (
+            <g class="fb-node" transform={`translate(${x} ${y})`}>
+              <rect x="-62" y="-30" width="124" height="60" rx="14"></rect>
+              <circle cx="44" cy="-14" r="5"></circle>
+              <text y="56" text-anchor="middle">{n.name}</text>
+            </g>
+          );
+        })
+      }
+    </svg>
+  </div>
+
+  <div class="demo">
+    <div class="demo-controls">
+      <div class="buttons" role="group" aria-label={copy.demoTitle}>
+        <button class="btn btn-primary" type="button" data-action="send">{copy.send}</button>
+        <button class="btn" type="button" data-action="duplicate">{copy.duplicate}</button>
+        <button class="btn" type="button" data-action="queue" data-active="false" data-off={copy.queueOff} data-on={copy.queueOn}>
+          <span class="switch" aria-hidden="true"></span>
+          <span data-label>{copy.queueOff}</span>
+        </button>
+      </div>
+      <div class="log">
+        <div class="log-head">
+          <p class="log-title">{copy.logTitle}</p>
+          <button class="link-btn" type="button" data-action="pause" data-active="false" data-off={copy.pauseOff} data-on={copy.pauseOn}>
+            <span data-label>{copy.pauseOff}</span>
+          </button>
+        </div>
+        <ol data-log aria-hidden="true"></ol>
+        <p class="visually-hidden" role="status" data-status></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const stage = document.querySelector<HTMLElement>('[data-hero-stage]')!;
+
+  function hasWebGL() {
+    try {
+      const c = document.createElement('canvas');
+      return !!(c.getContext('webgl2') || c.getContext('webgl'));
+    } catch {
+      return false;
+    }
+  }
+
+  if (hasWebGL()) {
+    const copy = JSON.parse(stage.dataset.graph!);
+    const start = () =>
+      import('../scripts/hero-graph').then(({ mountHeroGraph }) => mountHeroGraph(stage, copy));
+    if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 600 });
+    else setTimeout(start, 200);
+  } else {
+    stage.classList.add('no-webgl');
+    document.querySelectorAll<HTMLButtonElement>('[data-action]').forEach((b) => (b.disabled = true));
+  }
+</script>
+
+<style>
+  .flow-demo {
+    margin-top: 1rem;
+  }
+
+  .stage {
+    position: relative;
+    height: clamp(18rem, 44svh, 32rem);
+    margin-top: clamp(0.5rem, 2vw, 1.5rem);
+    touch-action: pan-y;
+  }
+
+  .stage canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.6s;
+  }
+
+  .stage:global(.is-live) canvas {
+    opacity: 1;
+  }
+
+  .stage:global(.is-live) .fallback {
+    display: none;
+  }
+
+  .labels {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .labels :global(.node-label) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: grid;
+    justify-items: center;
+    gap: 0.05rem;
+    text-align: center;
+    white-space: nowrap;
+    will-change: transform;
+  }
+
+  .labels :global(.node-label strong) {
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  .labels :global(.node-label span) {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    opacity: 0;
+    translate: 0 -4px;
+    transition: opacity 0.2s, translate 0.2s;
+  }
+
+  .labels :global(.node-label.is-hover span) {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  .labels :global(.node-label.is-down strong) {
+    color: var(--warn);
+  }
+
+  .fallback {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding-inline: var(--gutter);
+  }
+
+  .fb-lines path {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-width: 2;
+  }
+
+  .fb-node rect {
+    fill: var(--bg-raised);
+    stroke: var(--line-strong);
+  }
+
+  .fb-node circle {
+    fill: var(--signal);
+  }
+
+  .fb-node text {
+    fill: var(--ink);
+    font: 600 16px var(--font-sans);
+  }
+
+  .demo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 52rem;
+    gap: 2rem 3rem;
+    margin-top: 1.5rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .demo-title {
+    font-size: var(--step-2);
+    font-stretch: 85%;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.6rem;
+  }
+
+  .demo-copy p {
+    color: var(--ink-soft);
+    max-width: 52ch;
+  }
+
+  .hint {
+    margin-top: 0.75rem;
+    font-size: var(--step--1);
+  }
+
+  .hint-touch {
+    display: none;
+  }
+
+  @media (pointer: coarse) {
+    .hint-fine {
+      display: none;
+    }
+    .hint-touch {
+      display: inline;
+    }
+  }
+
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .btn[data-active='true'][data-action='queue'] {
+    border-color: var(--warn);
+    color: var(--warn);
+  }
+
+  .switch {
+    width: 1.9rem;
+    height: 1.1rem;
+    border-radius: 999px;
+    background: var(--signal);
+    position: relative;
+    transition: background-color 0.2s;
+  }
+
+  .switch::after {
+    content: '';
+    position: absolute;
+    top: 0.15rem;
+    left: 0.95rem;
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    background: var(--signal-ink);
+    transition: left 0.2s var(--ease-out);
+  }
+
+  [data-active='true'] .switch {
+    background: var(--warn);
+  }
+
+  [data-active='true'] .switch::after {
+    left: 0.15rem;
+  }
+
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .log {
+    margin-top: 1.1rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+    min-height: 10.5rem;
+  }
+
+  .log-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .log-title {
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .link-btn {
+    min-height: 2.75rem;
+    padding: 0 0.25rem;
+    border: 0;
+    background: none;
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+  }
+
+  .link-btn:hover {
+    color: var(--ink);
+  }
+
+  .log ol {
+    display: grid;
+    gap: 0.3rem;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .log :global(li) {
+    color: var(--ink-soft);
+    animation: log-in 0.35s var(--ease-out) both;
+  }
+
+  .log :global(li:first-child) {
+    color: var(--ink);
+  }
+
+  .log :global(li[data-kind='dedup']),
+  .log :global(li[data-kind='held']),
+  .log :global(li[data-kind='down']) {
+    color: var(--warn);
+  }
+
+  .log :global(li[data-kind='done']),
+  .log :global(li[data-kind='up']) {
+    color: var(--signal-text);
+  }
+
+  @keyframes log-in {
+    from {
+      opacity: 0;
+      translate: 0 -6px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .log :global(li) {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 56rem) {
+    .demo {
+      grid-template-columns: 1fr;
+    }
+    .stage {
+      height: min(36rem, 74svh);
+    }
+  }
+
+  /* Tablet em pé e celular deitado: o grafo fica na horizontal, então a área não precisa ser alta. */
+  @media (min-width: 34rem) and (max-width: 56rem) {
+    .stage {
+      height: min(clamp(16rem, 48vw, 28rem), 85svh);
+    }
+  }
+</style>

@@ -14,17 +14,20 @@ const links = [
   { key: 'projects', href: route('projects', locale), label: t.nav.projects },
   { key: 'books', href: route('books', locale), label: t.nav.books },
 ] as const;
+const clockLabel = locale === 'pt' ? 'Horário em Belo Horizonte' : 'Time in Belo Horizonte';
 ---
 
-<header class="site-header">
-  <div class="wrap bar">
+<header class="site-header" data-header>
+  <div class="bar">
     <a class="mark" href={route('home', locale)} aria-label="Gabriel Maciel, início">
       <span class="mark-dot" aria-hidden="true"></span>
-      <span>gabriel maciel</span>
+      <span class="mark-name">gabriel maciel</span>
     </a>
 
     <nav aria-label={t.navLabel}>
-      <ul>
+      <div class="track" data-nav>
+        <span class="indicator" data-indicator aria-hidden="true"></span>
+        <ul>
         {
           links.map((l) => (
             <li>
@@ -34,8 +37,16 @@ const links = [
             </li>
           ))
         }
-      </ul>
+        </ul>
+      </div>
     </nav>
+
+    <p class="clock">
+      <span class="live" aria-hidden="true"></span>
+      <span class="clock-city" aria-hidden="true">BH</span>
+      <span class="visually-hidden">{clockLabel}:</span>
+      <time data-header-clock data-locale={locale === 'pt' ? 'pt-BR' : 'en-GB'}>--:--:--</time>
+    </p>
 
     <div class="tools">
       <a class="tool lang" href={alternate} hreflang={locale === 'pt' ? 'en' : 'pt-BR'} lang={locale === 'pt' ? 'en' : 'pt-BR'}>
@@ -57,31 +68,95 @@ const links = [
   </div>
 </header>
 
+<script>
+  // Relógio de BH com segundos.
+  const clock = document.querySelector<HTMLTimeElement>('[data-header-clock]');
+  if (clock) {
+    const fmt = new Intl.DateTimeFormat(clock.dataset.locale, {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZone: 'America/Sao_Paulo',
+    });
+    const tick = () => (clock.textContent = fmt.format(new Date()));
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  // Destaque que desliza até o link sob o mouse e volta para a página atual.
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
+  const indicator = document.querySelector<HTMLElement>('[data-indicator]');
+  if (nav && indicator) {
+    const current = nav.querySelector<HTMLElement>('a[aria-current="page"]');
+    const moveTo = (el: HTMLElement | null, instant = false) => {
+      if (!el) {
+        indicator.style.opacity = '0';
+        return;
+      }
+      if (instant) indicator.style.transition = 'none';
+      indicator.style.opacity = '1';
+      indicator.style.width = `${el.offsetWidth}px`;
+      indicator.style.transform = `translateX(${el.offsetLeft}px)`;
+      if (instant) requestAnimationFrame(() => (indicator.style.transition = ''));
+    };
+    moveTo(current, true);
+    nav.querySelectorAll<HTMLElement>('a').forEach((a) => {
+      a.addEventListener('pointerenter', () => moveTo(a));
+      a.addEventListener('focus', () => moveTo(a));
+    });
+    nav.addEventListener('pointerleave', () => moveTo(current));
+    nav.addEventListener('focusout', () => moveTo(current));
+    addEventListener('resize', () => moveTo(current, true));
+    document.fonts?.ready.then(() => moveTo(current, true));
+  }
+
+  // Ao rolar, a barra fica mais sólida.
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  if (header) {
+    const update = () => header.classList.toggle('is-scrolled', scrollY > 24);
+    update();
+    addEventListener('scroll', update, { passive: true });
+  }
+</script>
+
 <style>
   .site-header {
     position: sticky;
     top: 0;
     z-index: 50;
-    background: color-mix(in oklab, var(--bg) 82%, transparent);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-bottom: 1px solid color-mix(in oklab, var(--line) 60%, transparent);
+    padding: 0.75rem var(--gutter) 0;
   }
 
   .bar {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    min-height: 4rem;
+    gap: 0.75rem;
+    max-width: var(--max);
+    min-height: 3.6rem;
+    margin-inline: auto;
+    padding: 0.35rem 0.4rem 0.35rem 1.1rem;
+    border: 1px solid color-mix(in oklab, var(--line) 80%, transparent);
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--bg) 62%, transparent);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
+  }
+
+  .site-header:global(.is-scrolled) .bar {
+    background: color-mix(in oklab, var(--bg) 86%, transparent);
+    border-color: var(--line);
+    box-shadow: 0 10px 30px -18px rgb(0 0 0 / 0.55);
   }
 
   .mark {
     display: inline-flex;
     align-items: center;
     gap: 0.55rem;
+    min-height: 2.75rem;
     font-weight: 700;
     font-stretch: 85%;
-    font-size: 1.15rem;
+    font-size: 1.12rem;
     letter-spacing: -0.01em;
     text-decoration: none;
     margin-right: auto;
@@ -95,36 +170,102 @@ const links = [
     box-shadow: 0 0 0 4px var(--signal-wash);
   }
 
+  .track {
+    position: relative;
+  }
+
   nav ul {
+    position: relative;
     display: flex;
-    gap: 0.25rem;
+    gap: 0.15rem;
     padding: 0;
     margin: 0;
     list-style: none;
   }
 
+  .indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--signal-wash);
+    opacity: 0;
+    transition:
+      transform 0.45s var(--ease-out),
+      width 0.45s var(--ease-out),
+      opacity 0.25s;
+  }
+
   nav a {
+    position: relative;
     display: block;
-    padding: 0.45rem 0.8rem;
+    padding: 0.55rem 0.9rem;
     border-radius: 999px;
     text-decoration: none;
     color: var(--ink-soft);
     font-weight: 550;
+    transition: color 0.2s;
   }
 
-  nav a:hover {
-    color: var(--ink);
-  }
-
+  nav a:hover,
   nav a[aria-current='page'] {
     color: var(--ink);
+  }
+
+  /* Sem JS o destaque fica no próprio link da página atual. */
+  .track:not(:has(.indicator[style])) a[aria-current='page'] {
     background: var(--signal-wash);
+  }
+
+  .clock {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0 0.85rem;
+    margin-left: 0.25rem;
+    border-left: 1px solid var(--line);
+    font-size: 0.92rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .clock-city {
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  .clock time {
+    font-weight: 650;
+    min-width: 4.6em;
+  }
+
+  .live {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--signal);
+    animation: live 2s ease-in-out infinite;
+  }
+
+  @keyframes live {
+    50% {
+      box-shadow: 0 0 0 5px var(--signal-wash);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .live {
+      animation: none;
+    }
+    .indicator {
+      transition: none;
+    }
   }
 
   .tools {
     display: flex;
-    gap: 0.35rem;
-    margin-left: 0.5rem;
+    gap: 0.3rem;
   }
 
   .tool {
@@ -176,12 +317,26 @@ const links = [
     position: absolute;
   }
 
-  /* No celular tudo cabe em uma linha: o nome some e fica só o ponto. */
-  @media (max-width: 40rem) {
-    .bar {
-      gap: 0.25rem;
+  @media (max-width: 52rem) {
+    .clock {
+      padding-inline: 0.6rem;
+      margin-left: 0;
     }
-    .mark span:last-child {
+    .clock-city {
+      display: none;
+    }
+  }
+
+  /* Celular: o nome vira só o ponto e o relógio dá lugar aos links. */
+  @media (max-width: 40rem) {
+    .site-header {
+      padding-top: 0.5rem;
+    }
+    .bar {
+      gap: 0.2rem;
+      padding-left: 0.6rem;
+    }
+    .mark-name {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -191,28 +346,33 @@ const links = [
     }
     .mark {
       min-width: 1.75rem;
-      min-height: 2.75rem;
-    }
-    nav ul {
-      gap: 0;
     }
     nav a {
-      padding: 0.45rem 0.5rem;
-      font-size: 0.97rem;
+      padding: 0.5rem 0.55rem;
+      font-size: 0.95rem;
     }
-    .tools {
-      margin-left: 0;
-      gap: 0.25rem;
+    .clock {
+      display: none;
     }
   }
 
-  /* Em telas bem estreitas o link "Início" já leva para a home. */
-  @media (max-width: 24rem) {
+  /* Telas bem estreitas: o link "Início" já leva para a home, então o ponto sai. */
+  @media (max-width: 22.5rem) {
     .mark {
       display: none;
     }
+    .bar {
+      padding-left: 0.3rem;
+    }
     nav {
       margin-right: auto;
+    }
+    nav a {
+      padding-inline: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .tools {
+      gap: 0.15rem;
     }
   }
 </style>

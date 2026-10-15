@@ -275,3 +275,22 @@ button {
 html.js-motion [data-reveal] {
   opacity: 0;
 }
+
+/* Anel do cursor (src/scripts/cursor.ts) */
+.cursor-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 200;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 1.5px solid var(--signal-text);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.cursor-ring.is-on {
+  opacity: 0.85;
+}
