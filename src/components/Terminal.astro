@@ -101,23 +101,20 @@ const chips = locale === 'pt' ? ['help', 'neofetch', 'projetos', 'livros', 'cont
     overflow: hidden;
     font-family: var(--font-mono);
     font-size: 0.82rem;
-    opacity: 0;
-    translate: 0 12px;
-    scale: 0.98;
-    transition:
-      opacity 0.22s,
-      translate 0.28s var(--ease-out),
-      scale 0.28s var(--ease-out),
-      display 0.28s allow-discrete,
-      overlay 0.28s allow-discrete;
   }
 
+  /* Só a abertura é animada. Fechar é instantâneo: animar a saída de um <dialog>
+     fazia ele perder o layout no meio do caminho em alguns navegadores. */
   .term[open] {
     display: flex;
     flex-direction: column;
     opacity: 1;
     translate: 0 0;
     scale: 1;
+    transition:
+      opacity 0.22s,
+      translate 0.28s var(--ease-out),
+      scale 0.28s var(--ease-out);
   }
 
   @starting-style {
@@ -134,7 +131,7 @@ const chips = locale === 'pt' ? ['help', 'neofetch', 'projetos', 'livros', 'cont
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .term {
+    .term[open] {
       transition: none;
     }
   }
