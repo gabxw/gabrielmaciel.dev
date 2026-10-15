@@ -1,0 +1,167 @@
+---
+import { getImage } from 'astro:assets';
+import type { Locale } from '../i18n/ui';
+import retrato from '../assets/retrato.jpg';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const photo = await getImage({ src: retrato, width: 900, format: 'webp' });
+const copy = {
+  pt: {
+    alt: 'Foto de Gabriel Maciel de camisa xadrez, olhando para o celular, com um globo de pontos verdes ao fundo.',
+    hover: 'passe o mouse para revelar',
+    tap: 'toque para revelar',
+    close: 'toque para esconder',
+  },
+  en: {
+    alt: 'Photo of Gabriel Maciel in a plaid shirt, looking at his phone, with a globe of green dots behind him.',
+    hover: 'hover to decrypt',
+    tap: 'tap to decrypt',
+    close: 'tap to hide',
+  },
+}[locale];
+---
+
+<figure class="ascii" data-ascii tabindex="0">
+  <img
+    class="photo"
+    data-ascii-photo
+    src={photo.src}
+    width={retrato.width}
+    height={retrato.height}
+    alt={copy.alt}
+    loading="lazy"
+    decoding="async"
+  />
+  <canvas class="glyphs" data-ascii-canvas aria-hidden="true"></canvas>
+  <span class="corner" aria-hidden="true"></span>
+  <figcaption class="caption" aria-hidden="true">
+    <span class="file">~/gabriel.jpg</span>
+    <span class="hint hint-fine">{copy.hover}</span>
+    <span class="hint hint-touch">{copy.tap}</span>
+    <span class="hint hint-close">{copy.close}</span>
+  </figcaption>
+</figure>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-ascii]');
+  if (root) {
+    const load = () => import('../scripts/ascii-portrait').then(({ mountAsciiPortrait }) => mountAsciiPortrait(root));
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          io.disconnect();
+          load();
+        }
+      },
+      { rootMargin: '300px' },
+    );
+    io.observe(root);
+  }
+</script>
+
+<style>
+  /* O quadro fica escuro nos dois temas: é um "terminal" com a foto dentro. */
+  .ascii {
+    position: relative;
+    aspect-ratio: 1122 / 1402;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid color-mix(in oklab, #4ade80 45%, transparent);
+    border-radius: 6px;
+    background: #050a08;
+    box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.6);
+    cursor: crosshair;
+    touch-action: manipulation;
+  }
+
+  .ascii:focus-visible {
+    outline: 2px solid var(--signal-text);
+    outline-offset: 4px;
+  }
+
+  .photo,
+  .glyphs {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .photo {
+    object-fit: cover;
+  }
+
+  /* O canvas só aparece quando o JS desenhou o ASCII; sem JS fica a foto. */
+  .glyphs {
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .ascii:global(.is-live) .glyphs {
+    opacity: 1;
+  }
+
+  /* Detalhe do canto: um quarto de círculo listrado, como uma tela de radar. */
+  .corner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3.4rem;
+    height: 3.4rem;
+    border-bottom-right-radius: 100%;
+    background: repeating-linear-gradient(to bottom, #4ade80 0 2px, color-mix(in oklab, #4ade80 55%, transparent) 2px 4px);
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  .caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    padding: 2.5rem 0.9rem 0.7rem;
+    background: linear-gradient(to top, rgb(5 10 8 / 0.92), transparent);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: #94a89d;
+    pointer-events: none;
+  }
+
+  .file {
+    color: #4ade80;
+    font-weight: 500;
+  }
+
+  .hint::before {
+    content: '·';
+    margin-right: 0.6rem;
+    color: #4a5e53;
+  }
+
+  .hint-touch,
+  .hint-close {
+    display: none;
+  }
+
+  @media (pointer: coarse) {
+    .hint-fine {
+      display: none;
+    }
+    .hint-touch {
+      display: inline;
+    }
+    .ascii:global(.is-open) .hint-touch {
+      display: none;
+    }
+    .ascii:global(.is-open) .hint-close {
+      display: inline;
+    }
+  }
+</style>

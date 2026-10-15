@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import StackPlayground from '../components/StackPlayground.astro';
@@ -10,7 +9,7 @@ import { projects, kindLabel } from '../data/projects';
 import { books } from '../data/books';
 import { jobs, studies } from '../data/profile';
 import { formatMonth, projectRoute, route, ui, type Locale } from '../i18n/ui';
-import avatar from '../assets/projects/avatar.jpg';
+import AsciiPortrait from '../components/AsciiPortrait.astro';
 
 interface Props {
   locale: Locale;
@@ -36,7 +35,6 @@ const copy = {
       ['Estudando', 'Engenharia de Software na UFBRA'],
       ['Fora do cÃ³digo', 'Economia, literatura, mÃºsica e viagens'],
     ],
-    photoAlt: 'Foto de Gabriel Maciel sorrindo.',
     pathTitle: 'TrajetÃ³ria',
     present: 'hoje',
     studyTitle: 'FormaÃ§Ã£o',
@@ -63,7 +61,6 @@ const copy = {
       ['Studying', 'Software Engineering at UFBRA'],
       ['Off the clock', 'Economics, literature, music and travel'],
     ],
-    photoAlt: 'Photo of Gabriel Maciel smiling.',
     pathTitle: 'Career',
     present: 'now',
     studyTitle: 'Education',
@@ -85,8 +82,8 @@ const range = (start: string, end?: string) => `${formatMonth(start, locale)} â€
   <Hero locale={locale} />
 
   <section class="about wrap" aria-labelledby="about-title">
-    <div class="about-photo" data-reveal="clip">
-      <Image src={avatar} alt={copy.photoAlt} widths={[320, 460]} sizes="(min-width: 56rem) 22rem, 60vw" />
+    <div class="about-photo">
+      <AsciiPortrait locale={locale} />
     </div>
     <div class="about-text">
       <h2 id="about-title" class="section-title" data-reveal="title">{copy.aboutTitle}</h2>
@@ -231,15 +228,7 @@ const range = (start: string, end?: string) => `${formatMonth(start, locale)} â€
   }
 
   .about-photo {
-    max-width: 20rem;
-  }
-
-  .about-photo img {
-    width: 100%;
-    aspect-ratio: 4 / 5;
-    object-fit: cover;
-    border-radius: 20px;
-    filter: saturate(0.9);
+    max-width: 26rem;
   }
 
   .prose {
@@ -535,7 +524,7 @@ const range = (start: string, end?: string) => `${formatMonth(start, locale)} â€
       grid-template-columns: 1fr;
     }
     .about-photo {
-      max-width: 18rem;
+      max-width: 24rem;
     }
     .facts {
       grid-template-columns: 1fr;
