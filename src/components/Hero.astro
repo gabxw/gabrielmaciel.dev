@@ -12,6 +12,8 @@ const copy = {
   pt: {
     lede: 'Gabriel Maciel é desenvolvedor de software em Belo Horizonte/MG, com foco em backend. Programa desde 2023 e atualmente constrói sistemas corporativos, APIs, integrações, automações e produtos SaaS com C#, .NET, PHP, Laravel, Python, Node.js, TypeScript, React e PostgreSQL, com infraestrutura Docker e Linux.',
     now: 'Atualmente é desenvolvedor full stack no Grupo Roma Brasil e criador do ZapBebidas e do AgendeCorte.',
+    ledeShort: 'Desenvolvedor de software em Belo Horizonte, com foco em backend. Construo sistemas, APIs, integrações e automações.',
+    nowShort: 'Hoje no Grupo Roma Brasil, com C#, Laravel, Python e PostgreSQL.',
     drag: 'Arraste o globo para girar',
     touch: 'Toque no globo e arraste para girar',
     scroll: 'Role para continuar',
@@ -21,6 +23,8 @@ const copy = {
   en: {
     lede: 'Gabriel Maciel is a backend-focused software developer in Belo Horizonte, Brazil. He has been programming since 2023 and currently builds enterprise systems, APIs, integrations, automations and SaaS products with C#, .NET, PHP, Laravel, Python, Node.js, TypeScript, React and PostgreSQL, running on Docker and Linux.',
     now: 'He is currently a full stack developer at Grupo Roma Brasil and the creator of ZapBebidas and AgendeCorte.',
+    ledeShort: 'Software developer in Belo Horizonte, Brazil, focused on backend. I build systems, APIs, integrations and automations.',
+    nowShort: 'Currently at Grupo Roma Brasil, with C#, Laravel, Python and PostgreSQL.',
     drag: 'Drag the globe to spin it',
     touch: 'Tap the globe and drag to spin it',
     scroll: 'Scroll to continue',
@@ -45,8 +49,11 @@ const copy = {
       <span>Maciel</span>
     </h1>
     <div class="hero-intro" data-hero-fade>
-      <p class="lede">{copy.lede}</p>
-      <p class="now">{copy.now}</p>
+      <!-- Texto completo no computador; no celular, a versão curta para não encher a tela. -->
+      <p class="lede long">{copy.lede}</p>
+      <p class="now long">{copy.now}</p>
+      <p class="lede short">{copy.ledeShort}</p>
+      <p class="now short">{copy.nowShort}</p>
       <div class="cta">
         <a class="btn btn-primary" href={route('projects', locale)}>{t.seeProjects}</a>
         <a class="btn" href="#contato">{t.contactCta}</a>
@@ -209,6 +216,19 @@ const copy = {
 
   .hero-intro {
     max-width: 36rem;
+  }
+
+  .short {
+    display: none;
+  }
+
+  @media (max-width: 40rem) {
+    .long {
+      display: none;
+    }
+    .short {
+      display: block;
+    }
   }
 
   .now {
