@@ -37,7 +37,32 @@ export const statusLabel: Record<BookStatus, T> = {
 const engineering: T = { pt: 'Engenharia de software', en: 'Software engineering' };
 const literature: T = { pt: 'Literatura', en: 'Literature' };
 
+/** A ordem aqui é a ordem em que os livros aparecem na estante. */
 export const books: Book[] = [
+  {
+    title: { pt: 'Código Limpo', en: 'Clean Code' },
+    author: 'Robert C. Martin',
+    status: 'read',
+    topic: engineering,
+    cover: codigoLimpo,
+    link: amazon('8576082675'),
+  },
+  {
+    title: { pt: 'Crime e Castigo', en: 'Crime and Punishment' },
+    author: 'Fiódor Dostoiévski',
+    status: 'read',
+    topic: literature,
+    cover: crimeECastigo,
+    link: amazon('8573266465'),
+  },
+  {
+    title: { pt: 'O Pequeno Príncipe', en: 'The Little Prince' },
+    author: 'Antoine de Saint-Exupéry',
+    status: 'read',
+    topic: literature,
+    cover: pequenoPrincipe,
+    link: amazon('8595081514'),
+  },
   {
     title: { pt: 'Flores para Algernon', en: 'Flowers for Algernon' },
     author: 'Daniel Keyes',
@@ -71,35 +96,11 @@ export const books: Book[] = [
     link: amazon('6583913062'),
   },
   {
-    title: { pt: 'Código Limpo', en: 'Clean Code' },
-    author: 'Robert C. Martin',
-    status: 'read',
-    topic: engineering,
-    cover: codigoLimpo,
-    link: amazon('8576082675'),
-  },
-  {
-    title: { pt: 'Crime e Castigo', en: 'Crime and Punishment' },
-    author: 'Fiódor Dostoiévski',
-    status: 'read',
-    topic: literature,
-    cover: crimeECastigo,
-    link: amazon('8573266465'),
-  },
-  {
     title: { pt: 'Memórias Póstumas de Brás Cubas', en: 'The Posthumous Memoirs of Brás Cubas' },
     author: 'Machado de Assis',
     status: 'read',
     topic: literature,
     cover: brasCubas,
     link: amazon('8582850018'),
-  },
-  {
-    title: { pt: 'O Pequeno Príncipe', en: 'The Little Prince' },
-    author: 'Antoine de Saint-Exupéry',
-    status: 'read',
-    topic: literature,
-    cover: pequenoPrincipe,
-    link: amazon('8595081514'),
   },
 ];
