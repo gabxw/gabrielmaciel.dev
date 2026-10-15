@@ -27,19 +27,27 @@ export const jobs: Job[] = [
         start: '2026-06',
         items: [
           {
-            pt: 'Trabalho no hub interno da empresa, em Laravel e SQL Server, usado por financeiro, contabilidade, logística e comercial.',
-            en: "I work on the company's internal hub, in Laravel and SQL Server, used by finance, accounting, logistics and sales.",
+            pt: 'Desenvolvo o hub interno da empresa, em Laravel e SQL Server, usado por financeiro, contabilidade, logística, comercial, pós-vendas e TI. São mais de 160 commits meus no sistema.',
+            en: "I develop the company's internal hub, in Laravel and SQL Server, used by finance, accounting, logistics, sales, after-sales and IT. I have made more than 160 commits to it.",
           },
           {
-            pt: 'Construí a conciliação entre a margem apurada no Power BI e o gerencial contábil, com IA explicando de onde vem cada diferença.',
-            en: 'I built the reconciliation between the margin reported in Power BI and the management accounts, with AI explaining where each difference comes from.',
+            pt: 'Criei o fechamento contábil configurável: tarefas por unidade e responsável, prazos, justificativa de atraso, anexos, histórico e avisos automáticos de prazo.',
+            en: 'I built the configurable accounting close: tasks per branch and owner, deadlines, delay justifications, attachments, history and automatic deadline warnings.',
           },
           {
-            pt: 'Rotinas agendadas que geram títulos, enviam relatórios e avisam prazos de fechamento.',
-            en: 'Scheduled jobs that generate receivables, send reports and warn about closing deadlines.',
+            pt: 'Construí a Conta Movimento do financeiro, com conciliação, filtros por situação e exportação para Excel por grupo, além do módulo de logística, do inventário rotativo do pós-vendas e da nota de débito em PDF.',
+            en: "I built finance's account statement module, with reconciliation, status filters and Excel export by group, plus the logistics module, after-sales cycle counting and debit notes in PDF.",
+          },
+          {
+            pt: 'Levei IA para o dia a dia da empresa: um assistente com a API da Anthropic que explica as diferenças entre a margem do Power BI e o gerencial contábil, e uma API em Node que consulta o ERP em modo somente leitura, com function calling, autenticação por chave e rate limit.',
+            en: "I brought AI into the company's routine: an assistant built on the Anthropic API that explains the gaps between the Power BI margin and the management accounts, and a Node API that queries the ERP read-only, with function calling, key authentication and rate limiting.",
+          },
+          {
+            pt: 'Fiz a API que mostra no hub o estado das automações em Python (agendada, rodando, concluída ou com falha) sem expor scripts, caminhos nem arquivos.',
+            en: 'I built the API that shows the status of the Python automations in the hub (scheduled, running, done or failed) without exposing scripts, paths or files.',
           },
         ],
-        stack: ['Laravel', 'PHP', 'SQL Server', 'Python', 'Anthropic API'],
+        stack: ['Laravel', 'PHP', 'SQL Server', 'Python', 'Node.js', 'Anthropic API', 'OpenAI'],
       },
       {
         title: { pt: 'Assistente de desenvolvimento', en: 'Development assistant' },
