@@ -60,7 +60,7 @@ const wide = p.gallery.filter((g) => !g.phone);
         </div>
       </dl>
       <div class="actions" data-reveal="fade">
-        {p.links.site && <a class="btn btn-primary" href={p.links.site}>{t.visit}</a>}
+        {p.links.site && <a class="btn btn-primary" href={p.links.site}>{p.links.siteLabel?.[locale] ?? t.visit}</a>}
         {p.links.repo && <a class:list={['btn', { 'btn-primary': !p.links.site }]} href={p.links.repo}>{t.source}</a>}
       </div>
     </header>

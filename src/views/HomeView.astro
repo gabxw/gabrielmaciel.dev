@@ -192,7 +192,7 @@ const range = (start: string, end?: string) => `${formatMonth(start, locale)} â€
       </div>
     </article>
 
-    <div class="pair">
+    <div class="cards">
       {
         others.map((p) => (
           <article class="project-card" data-reveal="fade">
@@ -474,11 +474,58 @@ const range = (start: string, end?: string) => `${formatMonth(start, locale)} â€
     font-size: var(--step--1);
   }
 
-  .pair {
+  /* Destaques abaixo do principal: trÃªs lado a lado no desktop largo; entre tablet e
+     desktop, dois em cima e o Ãºltimo deitado na linha inteira, sem card Ã³rfÃ£o. */
+  .cards {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 2.5rem 2.5rem;
+    gap: 2.5rem;
     margin-top: 4rem;
+  }
+
+  @media (min-width: 72rem) {
+    .cards:has(> :nth-child(3)) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2.5rem 2rem;
+    }
+
+    .cards:has(> :nth-child(3)) .project-card h3 {
+      font-size: var(--step-2);
+    }
+  }
+
+  /* Cards lado a lado com a mesma altura de mÃ­dia: a tela de celular cabe na faixa 16:10 dos outros. */
+  @media (min-width: 56.01rem) {
+    .cards .project-card .card-media {
+      aspect-ratio: 16 / 10;
+      min-height: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .cards .project-card .card-media :global(.cover-phone) {
+      height: 100%;
+    }
+  }
+
+  @media (min-width: 56.01rem) and (max-width: 72rem) {
+    /* Texto centralizado na altura da imagem: linhas 1fr acima e abaixo. */
+    .cards > .project-card:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      grid-template-rows: 1fr auto auto auto 1fr;
+      column-gap: 2.5rem;
+    }
+
+    .cards > .project-card:last-child:nth-child(odd) .card-media {
+      grid-row: 1 / -1;
+      margin-bottom: 0;
+    }
+
+    .cards > .project-card:last-child:nth-child(odd) > :nth-child(2) { grid-area: 2 / 2; }
+    .cards > .project-card:last-child:nth-child(odd) > :nth-child(3) { grid-area: 3 / 2; }
+    .cards > .project-card:last-child:nth-child(odd) > :nth-child(4) { grid-area: 4 / 2; }
   }
 
   .project-card .card-media {
@@ -534,7 +581,7 @@ const range = (start: string, end?: string) => `${formatMonth(start, locale)} â€
     .about,
     .work-head,
     .lead-project,
-    .pair {
+    .cards {
       grid-template-columns: 1fr;
     }
     .about-photo {

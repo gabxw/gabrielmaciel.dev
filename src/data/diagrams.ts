@@ -23,7 +23,29 @@ export interface Diagram {
   edges: DiagramEdge[];
 }
 
-export const diagrams: Record<'flowforge' | 'conta-aberta' | 'zapbebidas', Diagram> = {
+export const diagrams: Record<'flowforge' | 'conta-aberta' | 'zapbebidas' | 'm-lens', Diagram> = {
+  'm-lens': {
+    summary: {
+      pt: 'A extensão lê os arquivos .tmdl do projeto e separa cada query num .pq. Enquanto você edita, o linter analisa a árvore sintática e o preview executa a query com o PQTest. Na volta, ela localiza cada bloco pelo nome, mostra o diff e grava só o que mudou, depois de salvar um backup.',
+      en: 'The extension reads the project .tmdl files and splits each query into a .pq file. While you edit, the linter walks the syntax tree and the preview runs the query with PQTest. On the way back, it finds each block by name, shows the diff and writes only what changed, after saving a backup.',
+    },
+    nodes: [
+      { id: 'pbip', col: 0, row: 0, title: 'Projeto .pbip', sub: { pt: 'arquivos .tmdl', en: '.tmdl files' } },
+      { id: 'ext', col: 1, row: 0, title: 'Extração', sub: { pt: 'acha o bloco pelo nome', en: 'finds blocks by name' }, accent: true },
+      { id: 'pq', col: 2, row: 0, title: 'Arquivos .pq', sub: { pt: 'editados no VS Code', en: 'edited in VS Code' } },
+      { id: 'lint', col: 3, row: 0, title: 'Linter', sub: { pt: 'AST do parser oficial', en: 'official parser AST' } },
+      { id: 'prev', col: 2, row: 1, title: 'Preview', sub: { pt: 'PQTest do SDK', en: 'SDK PQTest' } },
+      { id: 'apply', col: 1, row: 1, title: 'Aplicar', sub: { pt: 'diff e backup', en: 'diff and backup' }, accent: true },
+    ],
+    edges: [
+      { from: 'pbip', to: 'ext', label: { pt: 'lê', en: 'reads' } },
+      { from: 'ext', to: 'pq', label: { pt: 'separa', en: 'splits' } },
+      { from: 'pq', to: 'lint', label: { pt: 'a cada edição', en: 'on every edit' } },
+      { from: 'pq', to: 'prev', label: { pt: 'executa', en: 'runs' } },
+      { from: 'pq', to: 'apply', label: { pt: 'só o que mudou', en: 'only changes' } },
+      { from: 'apply', to: 'pbip', label: { pt: 'grava de volta', en: 'writes back' } },
+    ],
+  },
   flowforge: {
     summary: {
       pt: 'O webhook chega na API, que grava a execução e a outbox na mesma transação do PostgreSQL. O Dispatcher do Worker publica a outbox no RabbitMQ, a Engine consome a fila, grava um checkpoint a cada etapa e chama o destino externo com retry seguro.',

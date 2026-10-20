@@ -10,8 +10,13 @@ import caVale from '../assets/projects/contaaberta-vale-a-pena.png';
 import caRetro from '../assets/projects/contaaberta-retrospectiva.png';
 import zbHome from '../assets/projects/zapbebidas-home.png';
 import acHome from '../assets/projects/agendecorte-home.png';
+import mlCover from '../assets/projects/mlens-cover.png';
+import mlPreview from '../assets/projects/mlens-preview.png';
+import mlLinter from '../assets/projects/mlens-linter.png';
+import mlDiff from '../assets/projects/mlens-diff.png';
+import mlPtbr from '../assets/projects/mlens-ptbr.png';
 
-export type ProjectKind = 'backend' | 'fullstack';
+export type ProjectKind = 'backend' | 'fullstack' | 'tooling';
 
 export interface Shot {
   image: ImageMetadata;
@@ -45,7 +50,8 @@ export interface Project {
   summary: T;
   context: T;
   stack: string[];
-  links: { repo?: string; site?: string };
+  /** siteLabel troca o "Abrir o site" quando o link não é um site (ex.: Marketplace). */
+  links: { repo?: string; site?: string; siteLabel?: T };
   /** GIF servido de /public, usado no lugar da imagem de capa. */
   motion?: { src: string; alt: T };
   cover?: Shot;
@@ -55,12 +61,13 @@ export interface Project {
   /** Números contados no repositório, com a data da contagem. */
   stats?: { counted: string; items: Stat[] };
   /** Chave do diagrama de arquitetura em src/data/diagrams.ts. */
-  diagram?: 'flowforge' | 'conta-aberta' | 'zapbebidas';
+  diagram?: 'flowforge' | 'conta-aberta' | 'zapbebidas' | 'm-lens';
 }
 
 export const kindLabel: Record<ProjectKind, T> = {
   backend: { pt: 'Backend', en: 'Backend' },
   fullstack: { pt: 'Full stack', en: 'Full stack' },
+  tooling: { pt: 'Ferramenta de dev', en: 'Developer tool' },
 };
 
 export const projects: Project[] = [
@@ -180,6 +187,106 @@ export const projects: Project[] = [
           {
             pt: 'Usei IA no processo, e ela me fez andar rápido. Mas foi revisando o que ela escrevia que eu mais aprendi: alguns dos casos acima eu só descobri porque uma revisão encontrou uma execução que ficava presa por horas.',
             en: 'I used AI along the way, and it let me move fast. But reviewing what it wrote is where I learned the most: some of the cases above only exist because a review found an execution that could get stuck for hours.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'm-lens',
+    name: 'M Lens',
+    start: '2026-06',
+    kind: 'tooling',
+    live: true,
+    featured: true,
+    stats: {
+      counted: '2026-10',
+      items: [
+        { value: 141, label: { pt: 'instalações no Marketplace do VS Code', en: 'installs on the VS Code Marketplace' } },
+        { value: 8, label: { pt: 'regras de linter para Power Query M', en: 'linter rules for Power Query M' } },
+        { value: 200, label: { pt: 'textos traduzidos entre inglês e português', en: 'strings translated between English and Portuguese' } },
+        { value: 4.6, decimals: 1, suffix: { pt: ' mil', en: 'k' }, label: { pt: 'linhas de TypeScript', en: 'lines of TypeScript' } },
+      ],
+    },
+    diagram: 'm-lens',
+    summary: {
+      pt: 'Extensão gratuita para o VS Code que tira o Power Query de dentro do Power BI Desktop, com linter, preview dos dados e gravação segura de volta no projeto.',
+      en: 'A free VS Code extension that takes Power Query out of Power BI Desktop, with a linter, data preview and safe write-back to the project.',
+    },
+    context: { pt: 'Publicada no Marketplace do VS Code', en: 'Published on the VS Code Marketplace' },
+    stack: ['TypeScript', 'VS Code API', 'Power Query M', 'TMDL', 'esbuild', 'GitHub Actions'],
+    links: {
+      repo: 'https://github.com/gabxw/m-lens',
+      site: 'https://marketplace.visualstudio.com/items?itemName=gabxw.m-lens',
+      siteLabel: { pt: 'Instalar no VS Code', en: 'Install in VS Code' },
+    },
+    cover: {
+      image: mlCover,
+      alt: {
+        pt: 'Barra lateral do M Lens no VS Code ao lado do preview de uma query em tabela, com dados de exemplo.',
+        en: 'The M Lens sidebar in VS Code next to a query preview as a table, with sample data.',
+      },
+    },
+    gallery: [
+      {
+        image: mlPreview,
+        alt: {
+          pt: 'VS Code inteiro: barra lateral do M Lens, arquivos .pq extraídos e o preview dos dados rodando pelo PQTest.',
+          en: 'The full VS Code window: the M Lens sidebar, the extracted .pq files and the data preview running through PQTest.',
+        },
+      },
+      {
+        image: mlLinter,
+        alt: {
+          pt: 'O linter apontando um nome de step genérico, com a explicação ao passar o mouse.',
+          en: 'The linter flagging a generic step name, with the explanation on hover.',
+        },
+      },
+      {
+        image: mlDiff,
+        alt: {
+          pt: 'Diff do arquivo .tmdl antes e depois de aplicar uma query editada.',
+          en: 'Diff of the .tmdl file before and after applying an edited query.',
+        },
+      },
+      {
+        image: mlPtbr,
+        alt: {
+          pt: 'A mesma barra lateral em português, seguindo o idioma do VS Code.',
+          en: 'The same sidebar in Portuguese, following the VS Code display language.',
+        },
+      },
+    ],
+    sections: [
+      {
+        title: { pt: 'Por que eu fiz', en: 'Why I built it' },
+        paragraphs: [
+          {
+            pt: 'De vez em quando eu preciso mexer em relatórios do Power BI no trabalho, e editar Power Query pelo Power BI Desktop é sofrido: uma janela pequena, sem busca de verdade, sem git, sem jeito de revisar o que mudou. O formato .pbip guarda o modelo em texto, então a peça que faltava era uma ferramenta para editar esse texto com conforto e devolver sem quebrar nada.',
+            en: "Every now and then I have to touch Power BI reports at work, and editing Power Query in Power BI Desktop is painful: a small window, no real search, no git, no way to review what changed. The .pbip format stores the model as text, so the missing piece was a tool to edit that text comfortably and put it back without breaking anything.",
+          },
+        ],
+      },
+      {
+        title: { pt: 'O que ela faz', en: 'What it does' },
+        items: [
+          { pt: 'Extrai cada query dos arquivos .tmdl para um .pq e grava de volta só o que mudou, localizando o bloco pelo nome e preservando metadados e quebras de linha.', en: 'Extracts every query from the .tmdl files into a .pq file and writes back only what changed, finding each block by name and keeping metadata and line endings.' },
+          { pt: 'Linter em cima da AST do parser oficial da Microsoft, com correções rápidas: step sem uso, nomes genéricos (em inglês e português), Table.Buffer, caminhos fixos e possíveis segredos.', en: 'A linter built on the AST from the official Microsoft parser, with quick fixes: unused steps, generic names (English and Portuguese), Table.Buffer, hardcoded paths and possible secrets.' },
+          { pt: 'Preview dos dados rodando o PQTest do Power Query SDK, com credenciais guardadas no cofre do VS Code e restritas ao servidor de origem.', en: "Data preview through the Power Query SDK's PQTest, with credentials kept in the VS Code secret storage and tied to their own server." },
+          { pt: 'Diff lado a lado antes de aplicar e backup automático de cada arquivo alterado.', en: 'A side-by-side diff before applying and an automatic backup of every changed file.' },
+          { pt: 'Barra lateral nativa e painéis que seguem o tema, em inglês e português.', en: 'A native sidebar and panels that follow the color theme, in English and Portuguese.' },
+        ],
+      },
+      {
+        title: { pt: 'O que eu aprendi', en: 'What I learned' },
+        paragraphs: [
+          {
+            pt: 'A primeira versão publicada tinha um bug sério: no layout que o Power BI Desktop grava de verdade, ela lia as queries compartilhadas como vazias, e aplicar sem editar nada estragava os metadados do modelo. Os testes passavam porque usavam um exemplo que eu mesmo tinha escrito. Corrigi testando contra arquivos reais, e hoje todo caso novo entra como teste antes da correção.',
+            en: 'The first published version had a serious bug: with the layout Power BI Desktop actually writes, it read shared queries as empty, and applying without editing anything damaged the model metadata. The tests passed because they used an example I had written myself. I fixed it by testing against real files, and now every new case becomes a test before the fix.',
+          },
+          {
+            pt: 'A outra lição foi de produto: a extensão funcionava, mas era difícil de usar. Ela trocava o tema de ícones de quem instalava, só falava português e tinha 16 comandos. A versão 0.2 é mais sobre tirar coisa do caminho do que sobre feature nova.',
+            en: 'The other lesson was about product: the extension worked, but it was hard to use. It changed the icon theme of whoever installed it, spoke only Portuguese and had 16 commands. Version 0.2 is more about getting things out of the way than about new features.',
           },
         ],
       },

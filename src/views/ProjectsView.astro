@@ -35,6 +35,7 @@ const filters = [
   { id: 'all', label: copy.all, count: projects.length },
   { id: 'backend', label: kindLabel.backend[locale], count: projects.filter((p) => p.kind === 'backend').length },
   { id: 'fullstack', label: kindLabel.fullstack[locale], count: projects.filter((p) => p.kind === 'fullstack').length },
+  { id: 'tooling', label: kindLabel.tooling[locale], count: projects.filter((p) => p.kind === 'tooling').length },
   { id: 'live', label: copy.live, count: projects.filter((p) => p.live).length },
 ];
 ---
