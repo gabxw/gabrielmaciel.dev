@@ -12,6 +12,8 @@ interface Cell {
 
 export function mountAsciiPortrait(root: HTMLElement) {
   const photo = root.querySelector<HTMLImageElement>('[data-ascii-photo]')!;
+  // o ASCII sai da versão com o fundo apagado, se existir; a revelação mostra a foto real
+  const mapa = root.querySelector<HTMLImageElement>('[data-ascii-mapa]') ?? photo;
   const canvas = root.querySelector<HTMLCanvasElement>('[data-ascii-canvas]')!;
   const ctx = canvas.getContext('2d')!;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -64,7 +66,7 @@ export function mountAsciiPortrait(root: HTMLElement) {
     probe.width = cols;
     probe.height = rows;
     const pctx = probe.getContext('2d', { willReadFrequently: true })!;
-    pctx.drawImage(photo, 0, 0, cols, rows);
+    pctx.drawImage(mapa, 0, 0, cols, rows);
     const data = pctx.getImageData(0, 0, cols, rows).data;
 
     // Estica o contraste pela distribuição de brilho da própria foto: o que é escuro
@@ -281,7 +283,7 @@ export function mountAsciiPortrait(root: HTMLElement) {
     }, 120);
   }).observe(root);
 
-  const ready = photo.decode ? photo.decode() : Promise.resolve();
+  const ready = Promise.all([photo, mapa].map((img) => (img.decode ? img.decode() : Promise.resolve())));
   Promise.all([ready, document.fonts.load('600 12px "Martian Mono"').catch(() => {})]).then(() => {
     sample();
     root.classList.add('is-live');

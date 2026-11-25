@@ -2,6 +2,8 @@
 import { getImage } from 'astro:assets';
 import type { Locale } from '../i18n/ui';
 import retrato from '../assets/retrato.jpg';
+// versão só para o desenho em ASCII: fundo apagado, para a pessoa ganhar os caracteres densos
+import retratoAscii from '../assets/retrato-ascii.jpg';
 
 interface Props {
   locale: Locale;
@@ -9,15 +11,16 @@ interface Props {
 
 const { locale } = Astro.props;
 const photo = await getImage({ src: retrato, width: 900, format: 'webp' });
+const mapa = await getImage({ src: retratoAscii, width: 480, format: 'webp' });
 const copy = {
   pt: {
-    alt: 'Foto de Gabriel Maciel de camisa xadrez, olhando para o celular, com um globo de pontos verdes ao fundo.',
+    alt: 'Foto de Gabriel Maciel de camisa branca e gravata, de pé num gramado, com morros verdes e céu azul ao fundo.',
     hover: 'passe o mouse para revelar',
     tap: 'toque para revelar',
     close: 'toque para esconder',
   },
   en: {
-    alt: 'Photo of Gabriel Maciel in a plaid shirt, looking at his phone, with a globe of green dots behind him.',
+    alt: 'Photo of Gabriel Maciel in a white shirt and tie, standing on a lawn, with green hills and a blue sky behind him.',
     hover: 'hover to decrypt',
     tap: 'tap to decrypt',
     close: 'tap to hide',
@@ -36,6 +39,7 @@ const copy = {
     loading="lazy"
     decoding="async"
   />
+  <img class="mapa" data-ascii-mapa src={mapa.src} width={retratoAscii.width} height={retratoAscii.height} alt="" aria-hidden="true" decoding="async" />
   <canvas class="glyphs" data-ascii-canvas aria-hidden="true"></canvas>
   <span class="corner" aria-hidden="true"></span>
   <figcaption class="caption" aria-hidden="true">
@@ -93,6 +97,10 @@ const copy = {
 
   .photo {
     object-fit: cover;
+  }
+
+  .mapa {
+    display: none;
   }
 
   /* O canvas só aparece quando o JS desenhou o ASCII; sem JS fica a foto. */
