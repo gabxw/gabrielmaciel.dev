@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Página de venda do claquete studio. Sem build: index.html + estilo.css + pagina.js + dados.js.
+       Preço, link de pagamento e Pixel do Meta ficam em VENDA, no script do fim desta página.
+       dados.js é gerado do projeto estudio-video: node scripts/dados-pagina-venda.cjs -->
+  <title>claquete studio · o vídeo do seu produto, montado por agentes</title>
+  <meta name="description" content="Um estúdio de vídeo em código que roda no seu computador: agentes de IA escrevem as cenas, a voz e a trilha, e o Remotion renderiza o anúncio em 16:9 e 9:16.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0b0c0e">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="claquete studio">
+  <meta property="og:description" content="O vídeo do seu produto, montado por 12 agentes de IA. Aperte o play e veja.">
+  <meta property="og:url" content="https://gabrielmaciel.dev/estudio/">
+  <meta property="og:image" content="https://gabrielmaciel.dev/estudio/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='12' width='26' height='17' rx='3' fill='%23a78bfa'/%3E%3Cpath d='M3 9l24-6 1.4 5.4L4.4 14.4z' fill='%23e7e9ee'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilo.css">
+  <script src="dados.js" defer></script>
+  <script src="pagina.js" defer></script>
+</head>
+<body>
+  <a class="pular" href="#oferta">Pular para o preço</a>
+
+  <header class="topo">
+    <div class="envelope">
+      <a class="marca" href="./" aria-label="claquete studio, início da página">
+        <svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="12" width="26" height="17" rx="3" fill="#a78bfa"/><path d="M3 9l24-6 1.4 5.4L4.4 14.4z" fill="#e7e9ee"/></svg>
+        claquete <span>studio</span>
+      </a>
+      <a class="botao pequeno" href="#oferta">Quero o kit</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero envelope">
+      <div class="hero-texto">
+        <div class="agentes mono" aria-hidden="true">
+          <span class="pontos">
+            <i style="--c:#f472b6"></i><i style="--c:#fb923c"></i><i style="--c:#facc15"></i><i style="--c:#a3e635"></i><i style="--c:#34d399"></i><i style="--c:#22d3ee"></i><i style="--c:#60a5fa"></i><i style="--c:#818cf8"></i><i style="--c:#c084fc"></i><i style="--c:#f87171"></i><i style="--c:#fdba74"></i><i style="--c:#94a3b8"></i>
+          </span>
+          kit para devs
+        </div>
+        <h1>O vídeo do seu produto, montado por <em>12 agentes de IA</em>.</h1>
+        <p class="lide">Assista em 2 minutos: oito anúncios feitos com ele, o uso real num Windows comum e tudo o que vem no kit. Tem legenda na tela, dá para ver sem som.</p>
+      </div>
+
+      <figure class="venda-video">
+        <div class="venda-quadro">
+          <video id="video-venda" controls preload="none" playsinline poster="venda-1080p60.jpg" width="1920" height="1080" aria-describedby="venda-legenda">
+            <source src="venda-1080p60.mp4" type="video/mp4">
+          </video>
+          <button type="button" class="venda-play" id="venda-play">
+            <span class="venda-play-icone" aria-hidden="true"></span>
+            <span>Assistir em 2 min</span>
+          </button>
+        </div>
+        <figcaption id="venda-legenda">
+          <span>2 min · com legenda na tela · feito com código, como os vídeos do kit</span>
+          <details class="transcricao">
+            <summary>Ler a narração</summary>
+            <ol>
+            <li>Oito anúncios. Oito negócios diferentes. Nenhum teve editor de vídeo, locutor ou câmera.</li>
+            <li>Todos saíram do mesmo lugar: o claquete studio. Um estúdio de vídeo feito com código, que roda no seu computador. Você descreve o anúncio. A IA escreve o roteiro, e o estúdio monta as cenas, gera a voz, compõe a trilha e exporta, pronto pra postar.</li>
+            <li>Na prática, é assim. Você começa de um modelo, ou pede pro Claude Code, com um comando só. Ajusta o roteiro num arquivo, com o editor te ajudando em cada campo. Confere todas as cenas numa imagem, sem gastar nada. Gera a voz e a trilha. E exporta, deitado e em pé.</li>
+            <li>Esse aqui foi feito do zero, pra esse vídeo. Escuta só.</li>
+            <li>E no kit vem tudo. O estúdio completo, com o código, pra mudar o que quiser. Dezesseis layouts, em dois estilos de edição. Três vídeos prontos, e cinco modelos de roteiro: software, aplicativo, loja, curso e serviço. A voz e a trilha integradas ao ElevenLabs. A skill pro Claude Code. E os guias, mais um tutorial em vídeo, do zero ao primeiro anúncio.</li>
+            <li>E dá pra usar de muitos jeitos. O anúncio do seu produto. Um Reels por semana. O vídeo de bastidores, com os agentes trabalhando, que sempre gera pergunta. Ou anúncios pros seus clientes, cobrando por isso. Os vídeos são seus, inclusive pra uso comercial.</li>
+            <li>Pra rodar, o plano de cinco dólares do ElevenLabs dá pra dezenas de vídeos por mês. E o render é no seu computador, sem custo nenhum.</li>
+            <li>claquete studio. Clique em quero o kit, e faça o seu primeiro anúncio hoje. E esse vídeo? Também foi feito com código. Até a voz é de IA.</li>
+            </ol>
+          </details>
+        </figcaption>
+      </figure>
+      <div class="acoes hero-acoes">
+        <a class="botao grande" href="#oferta">Quero o kit</a>
+        <a class="botao grande secundario" href="#ao-vivo">Ver os agentes montando ao vivo</a>
+      </div>
+    </div>
+
+    <section class="envelope ao-vivo" id="ao-vivo" aria-labelledby="t-ao-vivo">
+      <p class="rotulo">01 · ao vivo</p>
+      <h2 id="t-ao-vivo">Aperte o play: os 12 agentes montam um anúncio na sua frente.</h2>
+      <p class="intro">Um anúncio de <span data-dur>44</span> segundos se monta aqui, com roteiro, personagens, voz e trilha, como no estúdio que vem no kit.</p>
+      <!-- mini estúdio: os agentes montam a timeline e o vídeo começa no palco -->
+      <section class="mini" id="mini" data-estado="vazio" aria-label="Demonstração do estúdio: um anúncio montado pelos agentes">
+        <div class="mini-barra">
+          <span class="mini-marca" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 32 32"><rect x="3" y="12" width="26" height="17" rx="3" fill="#a78bfa"/><path d="M3 9l24-6 1.4 5.4L4.4 14.4z" fill="#e7e9ee"/></svg>
+            claquete studio
+          </span>
+          <span class="mini-arquivo mono" aria-hidden="true"><b id="mini-nome">arremata_v1</b><small id="mini-info">13 cenas · 1080p · 60 fps</small></span>
+          <span class="mini-ativos mono" aria-live="polite"><i class="luz"></i><span id="mini-ativos">12 agentes prontos</span></span>
+          <span class="mini-exportar" aria-hidden="true">Exportar</span>
+        </div>
+
+        <div class="mini-corpo">
+          <div class="mini-palco">
+            <video id="mini-video" preload="metadata" playsinline poster="filme.jpg" width="1280" height="720">
+              <source src="filme.mp4" type="video/mp4">
+              <track kind="captions" src="filme.vtt" srclang="pt-BR" label="Português">
+            </video>
+            <span class="mini-pilula mono" aria-hidden="true"><i></i>12 agentes trabalhando</span>
+            <span class="mini-quadros mono" aria-hidden="true" id="mini-quadros">0/2656 quadros</span>
+            <div class="mini-capa">
+              <button class="botao-montar" id="montar" type="button">
+                <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z" fill="currentColor"/></svg>
+                Montar o vídeo
+              </button>
+              <p class="mini-dica">Com som: teclado, sininho e a voz do vídeo.</p>
+            </div>
+            <div class="mini-fim" id="mini-fim" hidden>
+              <p class="fim-titulo">Esse vídeo saiu do estúdio que vem no kit.</p>
+              <div class="fim-acoes">
+                <a class="botao" href="#oferta">Quero fazer o do meu produto</a>
+                <button class="botao secundario" id="fim-denovo" type="button">Assistir de novo</button>
+              </div>
+            </div>
+          </div>
+
+          <aside class="mini-lado mono" aria-hidden="true">
+            <div class="lado-topo"><span id="lado-titulo">camadas</span><span id="lado-arquivo">—</span></div>
+            <dl class="camadas" id="camadas">
+              <div><dt style="--c:#9aa0ab">fundo</dt><dd>—</dd></div>
+              <div><dt style="--c:#e08a8a">personagem</dt><dd>—</dd></div>
+              <div><dt style="--c:#d4c25a">texto</dt><dd>—</dd></div>
+              <div><dt style="--c:#f472b6">movimento</dt><dd>—</dd></div>
+              <div><dt style="--c:#4fc3a1">som</dt><dd>—</dd></div>
+            </dl>
+            <div class="lado-topo"><span>registro dos agentes</span><span id="log-conta">0 ações</span></div>
+            <ol class="registro" id="registro"><li class="apagado">esperando o play…</li></ol>
+          </aside>
+        </div>
+
+        <div class="mini-tl">
+          <div class="tl-topo">
+            <button class="tl-botao" id="tl-play" type="button" aria-label="Montar e tocar o vídeo">
+              <svg class="i-play" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z" fill="currentColor"/></svg>
+              <svg class="i-pausa" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4.5v16H6zM13.5 4H18v16h-4.5z" fill="currentColor"/></svg>
+            </button>
+            <span class="tl-tempo mono"><b id="tl-tempo">00:00:00:00</b> / <span id="tl-total">00:00:44:16</span></span>
+            <span class="tl-estado mono" id="tl-estado">pronto para montar</span>
+            <span class="tl-ferramentas">
+              <button class="tl-chip mono" id="tl-legenda" type="button" aria-pressed="false">legendas</button>
+              <button class="tl-chip mono" id="tl-som" type="button" aria-pressed="true">som ligado</button>
+              <button class="tl-chip mono" id="tl-remontar" type="button" hidden>montar de novo</button>
+            </span>
+          </div>
+          <div class="tl-grade">
+            <div class="tl-rotulos mono" aria-hidden="true">
+              <span></span><span>cenas</span><span class="extra">personagens</span><span>texto</span><span class="extra">efeitos</span><span>voz</span>
+            </div>
+            <div class="tl-faixas" id="tl-faixas" role="slider" tabindex="0" aria-label="Linha do tempo do vídeo" aria-valuemin="0" aria-valuemax="46" aria-valuenow="0" aria-valuetext="00:00, aperte espaço para montar o vídeo" style="--p:0;--rev:0">
+              <div class="regua mono" aria-hidden="true" id="regua"></div>
+              <div class="faixa-tl" data-faixa="cenas"></div>
+              <div class="faixa-tl extra" data-faixa="pers"></div>
+              <div class="faixa-tl" data-faixa="texto"></div>
+              <div class="faixa-tl extra" data-faixa="efeitos"></div>
+              <div class="faixa-tl" data-faixa="voz"></div>
+              <span class="cabeca" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="pos-mini">
+        <div class="acoes">
+          <a class="botao grande" href="#oferta">Quero fazer o do meu produto</a>
+          <a class="botao grande secundario" href="#estilos">Comparar os dois estilos</a>
+        </div>
+        <div class="mini-rodape">
+          <p>O <span data-app>Arremata</span> é um app fictício, inventado para testar o estúdio. Roteiro, cenas, voz, trilha e efeitos foram gerados com ele.</p>
+          <details class="transcricao">
+            <summary>Ler a narração</summary>
+            <ol id="narracao"></ol>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="envelope" id="estilos" aria-labelledby="t-estilos">
+      <p class="rotulo">02 · estilos</p>
+      <h2 id="t-estilos">Não é um template. São linguagens de edição.</h2>
+      <p class="intro">O vídeo montado ao vivo, logo acima, usa o estilo <strong>cinético</strong>: corte a cada fala, tipografia batendo no tempo da voz, câmera em movimento, glitch e telas em 3D. O mesmo estúdio faz o estilo <strong>clássico</strong>, mais calmo, com personagens e manchetes. Você escolhe no roteiro e mistura os layouts como quiser.</p>
+      <div class="estilos">
+        <figure class="estilo-card">
+          <div class="estilo-video">
+            <video controls preload="none" playsinline poster="filme.jpg" width="1280" height="720">
+              <source src="filme.mp4" type="video/mp4">
+              <track kind="captions" src="filme.vtt" srclang="pt-BR" label="Português">
+            </video>
+          </div>
+          <figcaption>
+            <b>Cinético</b><span><span data-app>Lembra</span> · <span data-dur>28</span> s</span>
+            <small>impacto, relógio, multiplica, contador, ligações, conversa, agenda, marca, código</small>
+          </figcaption>
+        </figure>
+        <figure class="estilo-card">
+          <div class="estilo-video">
+            <video controls preload="none" playsinline poster="classico.jpg" width="1280" height="720">
+              <source src="classico.mp4" type="video/mp4">
+            </video>
+          </div>
+          <figcaption>
+            <b>Clássico</b><span>Arremata · 44 s</span>
+            <small>número, dividido, logo, celular, batidas, revelação, comentário</small>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="envelope" id="formatos" aria-labelledby="t-formatos">
+      <div class="formatos">
+        <div class="formatos-texto">
+          <p class="rotulo">03 · formatos</p>
+          <h2 id="t-formatos">Um roteiro, dois formatos.</h2>
+          <p class="intro">O mesmo vídeo sai deitado (16:9), para YouTube e site, e em pé (9:16), para Reels, TikTok e Shorts. Você não refaz nada: as cenas se reorganizam sozinhas, com texto em cima e personagem embaixo, longe da área que o Instagram cobre com a legenda e os botões.</p>
+          <ul class="marcas-lista">
+            <li><b>16:9</b> 1920×1080, 60 fps</li>
+            <li><b>9:16</b> 1080×1920, 60 fps</li>
+            <li><b>MP4</b> pronto para subir</li>
+          </ul>
+        </div>
+        <figure class="celular-moldura">
+          <div class="celular-tela">
+            <video id="video-vertical" controls preload="none" playsinline poster="vertical.jpg" width="720" height="1280">
+              <source src="vertical.mp4" type="video/mp4">
+              <track kind="captions" src="filme.vtt" srclang="pt-BR" label="Português">
+            </video>
+          </div>
+          <figcaption>O <span data-app>Arremata</span> em 9:16, renderizado pelo estúdio.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="envelope" aria-labelledby="t-como">
+      <p class="rotulo">04 · como funciona</p>
+      <h2 id="t-como">Do briefing ao MP4, sem abrir editor de vídeo.</h2>
+      <p class="intro">O vídeo é um projeto de código no seu computador. O <strong>Claude Code</strong> ou o <strong>Codex</strong> escreve o roteiro e as cenas com você, o <strong>ElevenLabs</strong> faz a voz e a trilha, e o <strong>Remotion</strong> renderiza o MP4.</p>
+      <ol class="passos">
+        <li style="--c:#f472b6">
+          <span class="mono">01 · roteiro</span>
+          <h3>Você conta o que vende</h3>
+          <p>Rode <code>/novo-video</code> no Claude Code ou no Codex. Ele pergunta o produto, o público e o tom, e escreve o roteiro e as cenas. Você revisa e pede ajustes, como faria com um redator.</p>
+        </li>
+        <li style="--c:#60a5fa">
+          <span class="mono">02 · voz e trilha</span>
+          <h3>A IA dá voz e música</h3>
+          <p>A narração sai do ElevenLabs com cada palavra cronometrada, e as cenas cortam exatamente na fala. A trilha abaixa sozinha quando a voz entra.</p>
+        </li>
+        <li style="--c:#4ade80">
+          <span class="mono">03 · render</span>
+          <h3>Exporte e grave o show</h3>
+          <p>Um clique em Exportar gera o MP4. O vídeo do <span data-app>Arremata</span> (<span data-dur>44</span> s, 60 fps, estilo cinético) renderizou em cerca de 6 minutos num notebook comum; o estilo clássico é mais leve. O modo show, o da seção ao vivo desta página, fica pronto para gravar a tela e postar.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="envelope" aria-labelledby="t-kit">
+      <div class="duas">
+        <div>
+          <p class="rotulo">05 · o kit</p>
+          <h2 id="t-kit">O que vem no kit.</h2>
+          <ul class="kit">
+            <li style="--c:#f472b6"><div><h3>O estúdio completo</h3><p>O repositório com 16 layouts de cena em dois estilos (clássico e cinético), deitados e em pé, a timeline, o modo show e a exportação. É seu para mudar como quiser.</p></div></li>
+            <li style="--c:#fb923c"><div><h3>Instalação em um comando</h3><p>Um <code>setup</code> confere o Node, cria o <code>.env</code> e prepara o vídeo de exemplo. Pensado para Windows e Mac.</p></div></li>
+            <li style="--c:#c084fc"><div><h3>A skill <code>/novo-video</code></h3><p>Instruções para o Claude Code e o Codex entrevistarem você e montarem um vídeo novo dentro do padrão do estúdio.</p></div></li>
+            <li style="--c:#22d3ee"><div><h3>3 vídeos-modelo e os sons</h3><p>Modelos para SaaS, app e negócio local, e os efeitos sonoros sintetizados em código, sem licença de terceiros.</p></div></li>
+            <li style="--c:#4ade80"><div><h3>Aulas curtas</h3><p>Instalar, fazer o primeiro vídeo, criar um layout novo, gravar o show e como vender esse vídeo para clientes.</p></div></li>
+          </ul>
+        </div>
+        <div>
+          <div class="requisitos">
+            <h3>Pra quem é</h3>
+            <ul>
+              <li><b>Dev</b><span>Quem tem um produto e quer vídeos dele sem contratar editor.</span></li>
+              <li><b>Freelancer</b><span>Quem quer oferecer vídeo de anúncio como serviço para clientes.</span></li>
+              <li><b>Não é pra</b><span>Quem quer um app de arrastar e soltar sem abrir o terminal.</span></li>
+            </ul>
+          </div>
+          <div class="requisitos custos" id="custos">
+            <h3>Sem letra miúda: o custo para rodar</h3>
+            <ul>
+              <li><b>Kit</b><span><strong data-preco>R$ —</strong>, pagamento único.</span></li>
+              <li><b>Voz e trilha</b><span>ElevenLabs, conta sua. O plano Starter (cerca de US$ 5 a 6 por mês) já permite uso comercial; o gratuito não.</span></li>
+              <li><b>IA</b><span>Claude Code (vem no Claude Pro, cerca de US$ 20 por mês) ou Codex, da OpenAI. Sem eles, você escreve o roteiro à mão.</span></li>
+              <li><b>Render</b><span>No seu computador, sem custo por vídeo. O Remotion é grátis para pessoa física e empresas de até 3 pessoas.</span></li>
+              <li><b>Máquina</b><span>Node 22.9 ou mais novo. Feito e testado no Windows 11; Node e Remotion também rodam no macOS.</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="envelope" aria-labelledby="t-autor">
+      <div class="autor-bloco">
+        <img src="autor.jpg" width="160" height="160" alt="Foto de Gabriel Maciel" loading="lazy">
+        <div>
+          <p class="rotulo">06 · quem fez</p>
+          <h2 id="t-autor">Oi, eu sou o Gabriel.</h2>
+          <p>Sou desenvolvedor full stack em Belo Horizonte e uso IA no trabalho todos os dias. Construí este estúdio com o Claude Code: os vídeos de exemplo, a timeline, os sons e esta página saíram dele. O kit é o mesmo projeto que eu uso, com a instalação e as aulas que eu gostaria de ter tido.</p>
+          <p class="autor-links"><a href="https://gabrielmaciel.dev/" target="_blank" rel="noopener">gabrielmaciel.dev</a><a href="https://github.com/gabxw" target="_blank" rel="noopener">github.com/gabxw</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="envelope" id="oferta" aria-labelledby="t-oferta" tabindex="-1">
+      <p class="rotulo">07 · o kit completo</p>
+      <div class="oferta">
+        <div>
+          <h2 id="t-oferta">Tudo o que fez o vídeo do <span data-app>Arremata</span>, pronto para o seu produto.</h2>
+          <ul>
+            <li><span><strong>O estúdio completo</strong>: 16 layouts em dois estilos, 16:9 e 9:16, timeline, modo show e exportação</span></li>
+            <li><span><strong>Instalação em um comando</strong>, para Windows e Mac</span></li>
+            <li><span><strong>A skill <code>/novo-video</code></strong> para o Claude Code e o Codex</span></li>
+            <li><span><strong>3 vídeos-modelo</strong> e os efeitos sonoros sintetizados em código</span></li>
+            <li><span><strong>Aulas curtas</strong>, da instalação a vender o vídeo para clientes</span></li>
+          </ul>
+        </div>
+        <div class="preco">
+          <p class="rotulo">pagamento único</p>
+          <p class="valor" data-preco-grande><small>R$</small>—</p>
+          <p class="forma" data-forma>Pix, boleto ou cartão.</p>
+          <a class="botao grande" href="#oferta" data-comprar>Comprar agora</a>
+          <ul class="garantias">
+            <li>Acesso imediato</li>
+            <li>7 dias de garantia</li>
+          </ul>
+          <p class="preco-nota">Fora o kit, você usa as suas contas do ElevenLabs e da IA. <a href="#custos">Ver os custos</a>.</p>
+          <p class="aviso-config" id="aviso-config" role="status"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="envelope" aria-labelledby="t-faq">
+      <p class="rotulo">08 · perguntas</p>
+      <h2 id="t-faq">Antes de comprar.</h2>
+      <div class="faq">
+        <details>
+          <summary>Quanto tempo leva para fazer um vídeo?</summary>
+          <p>O render é a parte rápida: os <span data-dur>44</span> segundos do <span data-app>Arremata</span> saíram em cerca de 6 minutos, e a voz fica pronta em segundos. O que leva mais tempo é o roteiro, porque é uma conversa com a IA até o texto ficar do seu jeito. O primeiro vídeo demora mais porque você ainda está aprendendo o estúdio; as aulas cobrem esse caminho.</p>
+        </details>
+        <details>
+          <summary>Os agentes fazem o vídeo em 5 segundos?</summary>
+          <p>Não. O trabalho é real (roteiro, cenas, voz, trilha e render), mas passa por você. O modo show, que você viu no topo, é a apresentação desse trabalho, coreografada para ser gravada e postada.</p>
+        </details>
+        <details>
+          <summary>Faz vídeo vertical para Reels e TikTok?</summary>
+          <p>Faz. Cada vídeo sai em 16:9 e em 9:16 a partir do mesmo roteiro, como o <span data-app>Arremata</span> mais acima. No vertical, o conteúdo fica fora da faixa que o Instagram cobre com a legenda e os botões.</p>
+        </details>
+        <details>
+          <summary>Preciso pagar o Claude Code ou o Codex?</summary>
+          <p>Para o <code>/novo-video</code>, sim: o Claude Code vem com o Claude Pro, e o Codex com os planos pagos do ChatGPT. Sem eles, o estúdio funciona do mesmo jeito, mas você escreve o roteiro (um arquivo JSON) à mão.</p>
+        </details>
+        <details>
+          <summary>Posso usar a minha própria voz?</summary>
+          <p>Pode, se clonar a sua voz no ElevenLabs. Isso depende do plano que você tiver lá; confira na página de preços deles. Sem clonar, você escolhe entre as vozes prontas da biblioteca, como a do <span data-app>Arremata</span>.</p>
+        </details>
+        <details>
+          <summary>Preciso saber programar?</summary>
+          <p>Para usar os layouts do kit, basta seguir o passo a passo, rodar comandos no terminal e conversar com a IA. Para criar cenas novas, ajuda saber React.</p>
+        </details>
+        <details>
+          <summary>Funciona no Windows?</summary>
+          <p>Funciona. O estúdio foi feito e testado no Windows 11. Node e Remotion também rodam no macOS.</p>
+        </details>
+        <details>
+          <summary>Preciso pagar o Remotion?</summary>
+          <p>Para pessoa física e empresas com até 3 pessoas, o Remotion é gratuito. Empresas maiores precisam da licença deles.</p>
+        </details>
+        <details>
+          <summary>Como eu recebo o kit?</summary>
+          <p>Assim que o pagamento é confirmado, chega um e-mail com o acesso à área de membros: o estúdio para baixar, as aulas e o passo a passo de instalação. No Pix e no cartão é na hora; no boleto, quando o banco compensar.</p>
+        </details>
+        <details>
+          <summary>E se eu não gostar?</summary>
+          <p>Você tem 7 dias para pedir o reembolso pela própria plataforma de pagamento, sem precisar explicar o motivo.</p>
+        </details>
+        <details>
+          <summary>Posso usar os vídeos comercialmente?</summary>
+          <p>Sim. O código e os sons do estúdio são seus para usar. A voz e a trilha seguem o plano do ElevenLabs que você tiver, e o plano pago permite uso comercial.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="envelope" id="experimente" aria-labelledby="t-lab">
+      <p class="rotulo">09 · brinque com o roteiro</p>
+      <h2 id="t-lab">Como o seu produto viraria roteiro.</h2>
+      <p class="intro">No estúdio, o vídeo é um arquivo <code>filme.json</code>. Preencha os campos e veja um esboço das cenas e o roteiro sendo escrito. É só um rascunho feito aqui no navegador: no kit, o estúdio transforma esse roteiro em vídeo de verdade, com personagens, voz e trilha.</p>
+
+      <div class="lab">
+        <form class="lab-campos" id="lab-form" autocomplete="off">
+          <label class="campo">
+            <span>Nome do produto</span>
+            <input id="f-nome" name="nome" maxlength="24" value="Arremata" spellcheck="false">
+          </label>
+          <label class="campo">
+            <span>O que ele faz</span>
+            <input id="f-faz" name="faz" maxlength="72" value="acha os editais e avisa antes do prazo">
+          </label>
+          <label class="campo">
+            <span>A dor do seu cliente</span>
+            <input id="f-dor" name="dor" maxlength="80" value="Você só soube da licitação depois que ela fechou.">
+          </label>
+          <fieldset class="campo">
+            <legend>Cor da marca</legend>
+            <div class="cores">
+              <label><input type="radio" name="cor" value="#1D5BFF" checked><span style="--c:#1D5BFF">azul</span></label>
+              <label><input type="radio" name="cor" value="#12A150"><span style="--c:#12A150">verde</span></label>
+              <label><input type="radio" name="cor" value="#F26B1D"><span style="--c:#F26B1D">laranja</span></label>
+              <label><input type="radio" name="cor" value="#E5367A"><span style="--c:#E5367A">rosa</span></label>
+              <label><input type="radio" name="cor" value="#7C4DFF"><span style="--c:#7C4DFF">roxo</span></label>
+              <label><input type="radio" name="cor" value="#15171C"><span style="--c:#15171C">grafite</span></label>
+            </div>
+          </fieldset>
+        </form>
+
+        <div class="lab-saida">
+          <div class="lab-palco" id="lab-palco" role="img" aria-label="Esboço animado das cenas do seu anúncio"></div>
+          <div class="lab-controles">
+            <div class="lab-cenas" role="group" aria-label="Cenas do esboço">
+              <button type="button" data-cena="0" aria-pressed="true"><b>01</b> dor</button>
+              <button type="button" data-cena="1" aria-pressed="false"><b>02</b> logo</button>
+              <button type="button" data-cena="2" aria-pressed="false"><b>03</b> app</button>
+              <button type="button" data-cena="3" aria-pressed="false"><b>04</b> chamada</button>
+            </div>
+            <button type="button" class="tl-chip mono" id="lab-pausa" aria-pressed="false">pausar</button>
+          </div>
+          <div class="lab-codigo">
+            <div class="lab-codigo-topo mono">
+              <span id="lab-caminho">filmes/arremata/filme.json</span>
+              <button type="button" class="tl-chip mono" id="lab-copiar">copiar</button>
+            </div>
+            <pre tabindex="0" aria-label="Roteiro gerado em JSON"><code id="lab-json"></code></pre>
+            <p class="sr" id="lab-status" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="envelope" id="sons" aria-labelledby="t-sons">
+      <p class="rotulo">10 · detalhe de acabamento</p>
+      <h2 id="t-sons">Até o som é código.</h2>
+      <p class="intro">Os efeitos do estúdio são sintetizados com NumPy: sem banco de sons, sem licença de terceiros. Toque e veja a função que gera cada um.</p>
+      <div class="mesa">
+        <div class="pads" id="pads" role="group" aria-label="Efeitos sonoros"></div>
+        <div class="py">
+          <div class="lab-codigo-topo mono"><span>scripts/sons.py</span><span id="py-nome">def sino()</span></div>
+          <pre tabindex="0" aria-label="Código Python do som selecionado"><code id="py-codigo"></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="envelope final" aria-labelledby="t-final">
+      <div class="caixa">
+        <h2 id="t-final">Quer o vídeo do seu produto?</h2>
+        <p class="intro">O mesmo estúdio que fez o <span data-app>Arremata</span>, em 16:9 e 9:16, com a instalação, os modelos e as aulas. Acesso logo após o pagamento, 7 dias de garantia.</p>
+        <a class="botao grande" href="#oferta" data-comprar>Comprar o kit · <span data-preco>R$ —</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="envelope">
+      <span>claquete studio · feito por <a href="https://gabrielmaciel.dev/" target="_blank" rel="noopener">Gabriel Maciel</a></span>
+      <span>Os apps dos vídeos são fictícios, criados só para demonstração.</span>
+    </div>
+  </footer>
+
+  <script>
+    // Configuração da venda. Kiwify: Produtos > seu produto > Links, copie o link do checkout.
+    const VENDA = {
+      checkout: '',   // ex.: https://pay.kiwify.com.br/AbC123
+      preco: 147,     // em reais, o mesmo valor cadastrado na plataforma
+      parcelas: 12,   // máximo de parcelas no cartão; 0 ou 1 esconde
+      pixel: '',      // id do Pixel do Meta (opcional, para medir o anúncio)
+    };
+
+    const reduzirVenda = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reais = (v) => v.toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
+    document.querySelectorAll('[data-preco]').forEach((el) => { el.textContent = 'R$ ' + reais(VENDA.preco); });
+    document.querySelector('[data-preco-grande]').innerHTML = '<small>R$</small>' + reais(VENDA.preco);
+    document.querySelector('[data-forma]').textContent = VENDA.parcelas > 1
+      ? `No Pix, no boleto ou em até ${VENDA.parcelas}x no cartão.`
+      : 'Pix, boleto ou cartão.';
+
+    // Pixel do Meta: PageView ao abrir e InitiateCheckout ao clicar em comprar
+    if (VENDA.pixel) {
+      !function (f, b, e, v, n, t, s) { if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+        if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = []; t = b.createElement(e); t.async = !0; t.src = v;
+        s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s); }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', VENDA.pixel);
+      fbq('track', 'PageView');
+      document.getElementById('video-venda')?.addEventListener('play', () => fbq('track', 'ViewContent', { content_name: 'video-venda' }), { once: true });
+    }
+
+    // leva as UTMs do anúncio para o checkout, para a plataforma registrar de onde veio a venda
+    const linkCheckout = () => {
+      const url = new URL(VENDA.checkout);
+      new URLSearchParams(location.search).forEach((v, k) => { if (/^(utm_|src$|sck$)/.test(k)) url.searchParams.set(k, v); });
+      return url.toString();
+    };
+
+    const oferta = document.getElementById('oferta');
+    const aviso = document.getElementById('aviso-config');
+    document.querySelectorAll('[data-comprar]').forEach((a) => {
+      if (VENDA.checkout) a.href = linkCheckout();
+      a.addEventListener('click', (e) => {
+        if (window.fbq) fbq('track', 'InitiateCheckout', { value: VENDA.preco, currency: 'BRL' });
+        if (VENDA.checkout) return;
+        e.preventDefault();
+        oferta.scrollIntoView({ behavior: reduzirVenda ? 'auto' : 'smooth', block: 'center' });
+        aviso.textContent = 'O link de pagamento ainda não foi configurado (VENDA.checkout, no fim da página).';
+      });
+    });
+  </script>
+</body>
+</html>
