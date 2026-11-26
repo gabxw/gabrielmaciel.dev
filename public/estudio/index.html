@@ -53,14 +53,26 @@
       </div>
 
       <figure class="venda-video">
-        <div class="venda-quadro">
-          <video id="video-venda" controls preload="none" playsinline poster="venda-1080p60.jpg" width="1920" height="1080" aria-describedby="venda-legenda">
-            <source src="venda-1080p60.mp4" type="video/mp4">
+        <!-- no computador, deitado; no celular, em pé dentro da moldura (cada um só baixa o seu, no play) -->
+        <div class="venda-quadro venda-deitado">
+          <video id="video-venda" controls preload="none" playsinline poster="venda-16x9-v2.jpg" width="1920" height="1080" aria-describedby="venda-legenda">
+            <source src="venda-16x9-v2.mp4" type="video/mp4">
           </video>
-          <button type="button" class="venda-play" id="venda-play">
+          <button type="button" class="venda-play">
             <span class="venda-play-icone" aria-hidden="true"></span>
             <span>Assistir em 2 min</span>
           </button>
+        </div>
+        <div class="celular-moldura venda-em-pe">
+          <div class="celular-tela venda-quadro">
+            <video id="video-venda-cel" controls preload="none" playsinline poster="venda-9x16-v2.jpg" width="1080" height="1920" aria-describedby="venda-legenda">
+              <source src="venda-9x16-v2.mp4" type="video/mp4">
+            </video>
+            <button type="button" class="venda-play">
+              <span class="venda-play-icone" aria-hidden="true"></span>
+              <span>Assistir em 2 min</span>
+            </button>
+          </div>
         </div>
         <figcaption id="venda-legenda">
           <span>2 min · com legenda na tela · feito com código, como os vídeos do kit</span>
@@ -305,7 +317,7 @@
         <div>
           <p class="rotulo">06 · quem fez</p>
           <h2 id="t-autor">Oi, eu sou o Gabriel.</h2>
-          <p>Sou desenvolvedor full stack em Belo Horizonte e uso IA no trabalho todos os dias. Construí este estúdio com o Claude Code: os vídeos de exemplo, a timeline, os sons e esta página saíram dele. O kit é o mesmo projeto que eu uso, com a instalação e as aulas que eu gostaria de ter tido.</p>
+          <p>Sou desenvolvedor full stack em Belo Horizonte e construo sistemas internos, integrações e automações para empresas. O claquete studio nasceu como ferramenta de produção: roteiro tipado e validado, render em Remotion, voz e trilha sincronizadas palavra a palavra e um fluxo testado do clone ao MP4. O kit entrega esse mesmo código, documentado e pronto para rodar na sua máquina.</p>
           <p class="autor-links"><a href="https://gabrielmaciel.dev/" target="_blank" rel="noopener">gabrielmaciel.dev</a><a href="https://github.com/gabxw" target="_blank" rel="noopener">github.com/gabxw</a></p>
         </div>
       </div>
@@ -498,7 +510,7 @@
         s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s); }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
       fbq('init', VENDA.pixel);
       fbq('track', 'PageView');
-      document.getElementById('video-venda')?.addEventListener('play', () => fbq('track', 'ViewContent', { content_name: 'video-venda' }), { once: true });
+      ['video-venda', 'video-venda-cel'].forEach((id) => document.getElementById(id)?.addEventListener('play', () => fbq('track', 'ViewContent', { content_name: id }), { once: true }));
     }
 
     // leva as UTMs do anúncio para o checkout, para a plataforma registrar de onde veio a venda

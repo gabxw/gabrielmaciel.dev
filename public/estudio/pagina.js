@@ -70,16 +70,17 @@
   $$('[data-dur]').forEach((el) => { el.textContent = String(Math.round(D)); });
 
   // só um vídeo toca por vez
-  // vídeo de venda: botão grande de play sobre a capa, some quando o vídeo começa
-  const vendaVideo = document.getElementById('video-venda');
-  const vendaPlay = document.getElementById('venda-play');
-  if (vendaVideo && vendaPlay) {
-    vendaPlay.addEventListener('click', () => {
-      vendaVideo.play();
-      vendaVideo.focus();
+  // vídeo de venda (deitado e em pé): botão grande de play sobre a capa, some quando o vídeo começa
+  document.querySelectorAll('.venda-quadro').forEach((quadro) => {
+    const video = quadro.querySelector('video');
+    const play = quadro.querySelector('.venda-play');
+    if (!video || !play) return;
+    play.addEventListener('click', () => {
+      video.play();
+      video.focus();
     });
-    vendaVideo.addEventListener('play', () => vendaPlay.parentElement.classList.add('tocou'));
-  }
+    video.addEventListener('play', () => quadro.classList.add('tocou'));
+  });
   const videos = $$('video');
   videos.forEach((v) => v.addEventListener('play', () => videos.forEach((o) => { if (o !== v && !o.paused) o.pause(); })));
 

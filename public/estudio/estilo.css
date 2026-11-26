@@ -520,3 +520,13 @@ h1 { font-size: clamp(2.1rem, 5.2vw, 4.25rem); margin-bottom: 1rem; max-width: 2
 .hero .venda-video { margin-top: 1.75rem; }
 .hero-acoes { margin-top: 1.25rem; }
 .ao-vivo .mini { margin-top: 1.5rem; }
+
+/* vídeo de venda em pé no celular, na mesma moldura da seção de formatos */
+.venda-em-pe { display: none; }
+.venda-em-pe .celular-tela video { display: block; height: auto; aspect-ratio: 9 / 16; border-radius: 1.75rem; object-fit: cover; }
+@media (max-width: 48rem) {
+  .venda-deitado { display: none; }
+  .venda-em-pe { display: block; width: min(100%, 21rem); margin: 0 auto; }
+  .hero .venda-video { border: 0; background: none; overflow: visible; }
+  .hero .venda-video figcaption { padding: 1.1rem 0 0; justify-content: center; text-align: center; }
+}
