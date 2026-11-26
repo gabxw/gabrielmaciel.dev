@@ -2,8 +2,8 @@
 import { getImage } from 'astro:assets';
 import type { Locale } from '../i18n/ui';
 import retrato from '../assets/retrato.jpg';
-// versão só para o desenho em ASCII: fundo apagado, para a pessoa ganhar os caracteres densos
-import retratoAscii from '../assets/retrato-ascii.jpg';
+// máscara da pessoa (branco) sobre o fundo (preto): separa as duas camadas do ASCII
+import retratoMascara from '../assets/retrato-mascara.png';
 
 interface Props {
   locale: Locale;
@@ -11,7 +11,7 @@ interface Props {
 
 const { locale } = Astro.props;
 const photo = await getImage({ src: retrato, width: 900, format: 'webp' });
-const mapa = await getImage({ src: retratoAscii, width: 480, format: 'webp' });
+const mascara = await getImage({ src: retratoMascara, width: 366, format: 'png' });
 const copy = {
   pt: {
     alt: 'Foto de Gabriel Maciel de camisa branca e gravata, de pé num gramado, com morros verdes e céu azul ao fundo.',
@@ -39,7 +39,7 @@ const copy = {
     loading="lazy"
     decoding="async"
   />
-  <img class="mapa" data-ascii-mapa src={mapa.src} width={retratoAscii.width} height={retratoAscii.height} alt="" aria-hidden="true" decoding="async" />
+  <img class="mascara" data-ascii-mascara src={mascara.src} width={retratoMascara.width} height={retratoMascara.height} alt="" aria-hidden="true" decoding="async" />
   <canvas class="glyphs" data-ascii-canvas aria-hidden="true"></canvas>
   <span class="corner" aria-hidden="true"></span>
   <figcaption class="caption" aria-hidden="true">
@@ -99,7 +99,7 @@ const copy = {
     object-fit: cover;
   }
 
-  .mapa {
+  .mascara {
     display: none;
   }
 
@@ -134,8 +134,8 @@ const copy = {
     display: flex;
     gap: 0.6rem;
     align-items: baseline;
-    padding: 2.5rem 0.9rem 0.7rem;
-    background: linear-gradient(to top, rgb(5 10 8 / 0.92), transparent);
+    padding: 3rem 0.9rem 0.7rem;
+    background: linear-gradient(to top, rgb(5 10 8 / 0.97) 35%, transparent);
     font-family: var(--font-mono);
     font-size: 0.72rem;
     color: #94a89d;
